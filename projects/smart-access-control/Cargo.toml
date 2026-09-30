@@ -1,0 +1,68 @@
+[package]
+name = "smart-access-control"
+version = "0.1.0"
+edition = "2024"
+description = "Software-simulated physical access control system (learning project)"
+publish = false
+
+[dependencies]
+# Argon2id password hashing for administrator accounts.
+argon2 = "0.6.0"
+# HTTP routing and handlers; `ws` adds WebSocket upgrades for live events.
+axum = { version = "0.8.9", features = ["ws"] }
+# UTC timestamps. `now` enables `Utc::now()` for the infrastructure clock only
+# (the domain never reads the time itself); `serde` for RFC 3339 in API DTOs.
+# No `clock` feature: we never need the machine's local time zone.
+chrono = { version = "0.4.45", default-features = false, features = ["std", "now", "serde"] }
+# IANA time zone database, for evaluating access schedules in local time.
+chrono-tz = "0.10.4"
+# Loads a local `.env` file in development; real environment variables win.
+dotenvy = "0.15.7"
+# OS random bytes for refresh tokens.
+getrandom = "0.4.3"
+# JWT access tokens (only HS256 is used). The `aws_lc_rs` backend needs a C
+# compiler to build, but unlike `rust_crypto` it does not pull in the `rsa`
+# crate, which has an unfixed timing advisory (RUSTSEC-2023-0071).
+jsonwebtoken = { version = "11.1.0", default-features = false, features = ["aws_lc_rs"] }
+# Metrics facade: code records counters/histograms without knowing the backend.
+metrics = "0.24.6"
+# Renders the recorded metrics in Prometheus text format for GET /metrics
+# (no built-in HTTP listener: the endpoint is an ordinary route).
+metrics-exporter-prometheus = { version = "0.18.3", default-features = false }
+# (De)serialisation of request/response DTOs.
+serde = { version = "1.0.229", features = ["derive"] }
+# JSON for WebSocket messages (HTTP bodies go through axum::Json).
+serde_json = "1.0.151"
+# SHA-256 to store refresh tokens as hashes, never in plaintext.
+sha2 = "0.11.0"
+# PostgreSQL driver, connection pool and migrations.
+sqlx = { version = "0.9.0", default-features = false, features = ["runtime-tokio", "postgres", "uuid", "chrono", "migrate", "macros"] }
+# Derive macros for explicit, typed error enums.
+thiserror = "2.0.21"
+# Async runtime (also provides signal handling for graceful shutdown).
+tokio = { version = "1.53.1", features = ["full"] }
+# Tower middleware: request tracing and IDs, CORS, security headers, timeouts,
+# static files (the built dashboard).
+tower-http = { version = "0.7.1", features = ["cors", "fs", "request-id", "set-header", "timeout", "trace"] }
+# Structured logging (`json` for machine-readable production logs).
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter", "fmt", "json"] }
+# Entity identifiers (UUIDv7: time-ordered, index-friendly primary keys).
+uuid = { version = "1.26.1", features = ["v7", "serde"] }
+
+[dev-dependencies]
+# StreamExt/SinkExt for the WebSocket test client.
+futures-util = "0.3.34"
+# Read response bodies in tests.
+http-body-util = "0.1.5"
+# Paused test clock (`start_paused`) for deterministic timing tests.
+tokio = { version = "1.53.1", features = ["test-util", "macros", "rt-multi-thread"] }
+# WebSocket client for testing the live event stream (same version axum uses).
+tokio-tungstenite = "0.29"
+# `ServiceExt::oneshot` drives the router in tests without opening a socket.
+tower = { version = "0.5.3", features = ["util"] }
+
+# Argon2 is deliberately expensive; unoptimised (debug) builds make each hash
+# take seconds. Optimise just this crate in dev/test builds.
+[profile.dev.package.argon2]
+opt-level = 3

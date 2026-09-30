@@ -1,0 +1,10 @@
+# Keep the build context small and free of secrets.
+target/
+dashboard/node_modules/
+dashboard/dist/
+.env
+.env.*
+!.env.example
+!.env.production.example
+.git
+*.md

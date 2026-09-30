@@ -1,0 +1,29 @@
+# Reverse proxy in front of the API: HTTPS (automatic certificates from
+# Let's Encrypt for a public domain, or Caddy's local CA for `localhost`),
+# HSTS, compression. Settings come from the environment (see
+# `.env.production.example`).
+
+{$SITE_ADDRESS} {
+	encode zstd gzip
+
+	header {
+		# Browsers remember to use HTTPS only. Set HSTS_MAX_AGE=0 when trying
+		# the stack on localhost, or every http://localhost site breaks.
+		Strict-Transport-Security "max-age={$HSTS_MAX_AGE:31536000}"
+		-Server
+	}
+
+	# Prometheus scrapes the app directly on the internal network; the
+	# endpoint is never exposed publicly, token or not.
+	respond /metrics 404
+
+	# Caddy replaces any client-sent X-Forwarded-For with the real client
+	# address; the app trusts this header only from this proxy
+	# (TRUSTED_PROXIES). WebSockets are proxied automatically.
+	reverse_proxy app:8080
+
+	log {
+		output stdout
+		format json
+	}
+}

@@ -1,147 +1,192 @@
 # rust
 
-学习资料：  
-Rust 程序设计语言：https://doc.rust-lang.org/book/  
-中文版：https://kaisery.github.io/trpl-zh-cn/  
+**English** | [简体中文](README.zh-CN.md)
 
-标准库文档：https://doc.rust-lang.org/std/prelude/index.html  
+Learning resources:  
+The Rust Programming Language: https://doc.rust-lang.org/book/  
+Chinese edition: https://kaisery.github.io/trpl-zh-cn/  
+
+Standard library docs: https://doc.rust-lang.org/std/prelude/index.html  
 
 - [rust](#rust)
-  - [1. Rust 的安装(Mac)](#1-rust-的安装mac)
+  - [0. Repository layout](#0-repository-layout)
+    - [0.1. Examples](#01-examples)
+    - [0.2. Projects](#02-projects)
+  - [1. Installing Rust (Mac)](#1-installing-rust-mac)
   - [2. Cargo](#2-cargo)
-    - [2.1. 使用 Cargo 创建项目](#21-使用-cargo-创建项目)
-      - [2.1.1. 从 crates.io 引入依赖包](#211-从-cratesio-引入依赖包)
-      - [2.1.2. 从其它注册服务引入依赖包](#212-从其它注册服务引入依赖包)
-      - [2.1.3. 引入 git 仓库作为依赖包](#213-引入-git-仓库作为依赖包)
-      - [2.1.4. 通过路径引入本地依赖包](#214-通过路径引入本地依赖包)
-      - [2.1.5. 根据平台引入依赖](#215-根据平台引入依赖)
+    - [2.1. Creating a project with Cargo](#21-creating-a-project-with-cargo)
+      - [2.1.1. Dependencies from crates.io](#211-dependencies-from-cratesio)
+      - [2.1.2. Dependencies from other registries](#212-dependencies-from-other-registries)
+      - [2.1.3. Git repositories as dependencies](#213-git-repositories-as-dependencies)
+      - [2.1.4. Local dependencies by path](#214-local-dependencies-by-path)
+      - [2.1.5. Platform-specific dependencies](#215-platform-specific-dependencies)
       - [2.1.6. \[dev-dependencies\]](#216-dev-dependencies)
       - [2.1.7. \[build-dependencies\]](#217-build-dependencies)
-      - [2.1.8 选择 features](#218-选择-features)
-      - [2.1.9. 在 Cargo.toml 中重命名依赖](#219-在-cargotoml-中重命名依赖)
-    - [2.2. 构建并运行 Cargo 项目](#22-构建并运行-cargo-项目)
-    - [2.3. Cargo.toml 格式](#23-cargotoml-格式)
-    - [2.4. 发布（release）构建](#24-发布release构建)
-  - [3. 基础语法](#3-基础语法)
-    - [3.1. 变量](#31-变量)
-    - [3.2. 常量](#32-常量)
-    - [3.3. 隐藏](#33-隐藏)
-  - [4. 数据类型](#4-数据类型)
-    - [4.1. 标量类型](#41-标量类型)
-      - [4.1.1. 整型](#411-整型)
-      - [4.1.2. 浮点型](#412-浮点型)
-    - [4.2. 数值运算](#42-数值运算)
-    - [4.3. 布尔型](#43-布尔型)
-    - [4.4. 字符类型](#44-字符类型)
-    - [4.5. 复合类型](#45-复合类型)
-      - [4.5.1. 元组类型](#451-元组类型)
-      - [4.5.2. 数组类型](#452-数组类型)
-  - [5. 函数](#5-函数)
-    - [5.1. 参数](#51-参数)
-    - [5.2. 语句和表达式](#52-语句和表达式)
-    - [5.3. 函数的返回值](#53-函数的返回值)
-  - [6. 控制流](#6-控制流)
-    - [6.1. if 表达式](#61-if-表达式)
-    - [6.2. 使用循环重复执行](#62-使用循环重复执行)
-      - [6.2.1. 使用 loop 重复执行代码](#621-使用-loop-重复执行代码)
-      - [6.2.2. while 条件循环](#622-while-条件循环)
-      - [6.2.3. 使用 for 遍历集合](#623-使用-for-遍历集合)
-  - [7. 所有权](#7-所有权)
-    - [7.1. 引用与借用](#71-引用与借用)
-    - [7.2. Slice 类型](#72-slice-类型)
-  - [8. 结构体](#8-结构体)
-    - [8.1. 方法](#81-方法)
-  - [9. 枚举](#9-枚举)
-  - [10. match 控制流](#10-match-控制流)
-  - [11. if let 控制流](#11-if-let-控制流)
-  - [12. 泛型和特征](#12-泛型和特征)
-    - [12.1. 结构体中使用泛型](#121-结构体中使用泛型)
-    - [12.2. 枚举中使用泛型](#122-枚举中使用泛型)
-    - [12.3. 方法中使用泛型](#123-方法中使用泛型)
-    - [12.4. const 泛型（Rust 1.51 版本引入的重要特性）](#124-const-泛型rust-151-版本引入的重要特性)
-      - [12.4.1 const 泛型表达式](#1241-const-泛型表达式)
-    - [12.5. 泛型的性能](#125-泛型的性能)
-    - [12.6. 特征 Trait](#126-特征-trait)
-      - [12.6.1. 为类型实现特征](#1261-为类型实现特征)
-      - [12.6.2. 特征定义与实现的位置(孤儿规则)](#1262-特征定义与实现的位置孤儿规则)
-      - [12.6.3. 默认实现](#1263-默认实现)
-      - [12.6.4. 使用特征作为函数参数](#1264-使用特征作为函数参数)
-      - [12.6.5. 特征约束(trait bound)](#1265-特征约束trait-bound)
-      - [12.6.6. 多重约束](#1266-多重约束)
-      - [12.6.7. Where 约束](#1267-where-约束)
-      - [12.6.8. 使用特征约束有条件地实现方法或特征](#1268-使用特征约束有条件地实现方法或特征)
-      - [12.6.9. 函数返回中的 impl Trait](#1269-函数返回中的-impl-trait)
-      - [12.6.10. 为自定义类型实现 + 操作](#12610-为自定义类型实现--操作)
-    - [12.7. 特征对象](#127-特征对象)
-  - [13. 动态数组 Vector](#13-动态数组-vector)
-    - [13.1. 创建动态数组](#131-创建动态数组)
-    - [13.2. 更新 Vector](#132-更新-vector)
-    - [13.3. 从 Vector 中读取元素](#133-从-vector-中读取元素)
-    - [13.4. 同时借用多个数组元素](#134-同时借用多个数组元素)
-    - [13.5. 迭代遍历 Vector 中的元素](#135-迭代遍历-vector-中的元素)
-    - [13.6. 存储不同类型的元素](#136-存储不同类型的元素)
-    - [13.7. Vector 常用方法](#137-vector-常用方法)
-    - [13.8. Vector 的排序](#138-vector-的排序)
+      - [2.1.8 Choosing features](#218-choosing-features)
+      - [2.1.9. Renaming dependencies in Cargo.toml](#219-renaming-dependencies-in-cargotoml)
+    - [2.2. Building and running a Cargo project](#22-building-and-running-a-cargo-project)
+    - [2.3. Cargo.toml format](#23-cargotoml-format)
+    - [2.4. Release builds](#24-release-builds)
+  - [3. Basic syntax](#3-basic-syntax)
+    - [3.1. Variables](#31-variables)
+    - [3.2. Constants](#32-constants)
+    - [3.3. Shadowing](#33-shadowing)
+  - [4. Data types](#4-data-types)
+    - [4.1. Scalar types](#41-scalar-types)
+      - [4.1.1. Integer types](#411-integer-types)
+      - [4.1.2. Floating-point types](#412-floating-point-types)
+    - [4.2. Numeric operations](#42-numeric-operations)
+    - [4.3. The Boolean type](#43-the-boolean-type)
+    - [4.4. The character type](#44-the-character-type)
+    - [4.5. Compound types](#45-compound-types)
+      - [4.5.1. The tuple type](#451-the-tuple-type)
+      - [4.5.2. The array type](#452-the-array-type)
+  - [5. Functions](#5-functions)
+    - [5.1. Parameters](#51-parameters)
+    - [5.2. Statements and expressions](#52-statements-and-expressions)
+    - [5.3. Function return values](#53-function-return-values)
+  - [6. Control flow](#6-control-flow)
+    - [6.1. if expressions](#61-if-expressions)
+    - [6.2. Repetition with loops](#62-repetition-with-loops)
+      - [6.2.1. Repeating code with loop](#621-repeating-code-with-loop)
+      - [6.2.2. Conditional loops with while](#622-conditional-loops-with-while)
+      - [6.2.3. Looping through a collection with for](#623-looping-through-a-collection-with-for)
+  - [7. Ownership](#7-ownership)
+    - [7.1. References and borrowing](#71-references-and-borrowing)
+    - [7.2. The slice type](#72-the-slice-type)
+  - [8. Structs](#8-structs)
+    - [8.1. Methods](#81-methods)
+  - [9. Enums](#9-enums)
+  - [10. The match control flow construct](#10-the-match-control-flow-construct)
+  - [11. Control flow with if let](#11-control-flow-with-if-let)
+  - [12. Generics and traits](#12-generics-and-traits)
+    - [12.1. Generics in structs](#121-generics-in-structs)
+    - [12.2. Generics in enums](#122-generics-in-enums)
+    - [12.3. Generics in methods](#123-generics-in-methods)
+    - [12.4. const generics (an important feature introduced in Rust 1.51)](#124-const-generics-an-important-feature-introduced-in-rust-151)
+      - [12.4.1 const generic expressions](#1241-const-generic-expressions)
+    - [12.5. Performance of generics](#125-performance-of-generics)
+    - [12.6. Traits](#126-traits)
+      - [12.6.1. Implementing a trait for a type](#1261-implementing-a-trait-for-a-type)
+      - [12.6.2. Where traits are defined and implemented (the orphan rule)](#1262-where-traits-are-defined-and-implemented-the-orphan-rule)
+      - [12.6.3. Default implementations](#1263-default-implementations)
+      - [12.6.4. Traits as function parameters](#1264-traits-as-function-parameters)
+      - [12.6.5. Trait bounds](#1265-trait-bounds)
+      - [12.6.6. Multiple bounds](#1266-multiple-bounds)
+      - [12.6.7. where clauses](#1267-where-clauses)
+      - [12.6.8. Conditionally implementing methods or traits with trait bounds](#1268-conditionally-implementing-methods-or-traits-with-trait-bounds)
+      - [12.6.9. impl Trait in return position](#1269-impl-trait-in-return-position)
+      - [12.6.10. Implementing + for a custom type](#12610-implementing--for-a-custom-type)
+    - [12.7. Trait objects](#127-trait-objects)
+  - [13. Vectors](#13-vectors)
+    - [13.1. Creating a vector](#131-creating-a-vector)
+    - [13.2. Updating a vector](#132-updating-a-vector)
+    - [13.3. Reading elements of a vector](#133-reading-elements-of-a-vector)
+    - [13.4. Borrowing several vector elements at once](#134-borrowing-several-vector-elements-at-once)
+    - [13.5. Iterating over the elements of a vector](#135-iterating-over-the-elements-of-a-vector)
+    - [13.6. Storing elements of different types](#136-storing-elements-of-different-types)
+    - [13.7. Common vector methods](#137-common-vector-methods)
+    - [13.8. Sorting vectors](#138-sorting-vectors)
   - [14. HashMap](#14-hashmap)
-    - [14.1. 创建 HashMap](#141-创建-hashmap)
-    - [14.2. 所有权转移](#142-所有权转移)
-    - [14.3. 查询 HashMap](#143-查询-hashmap)
-    - [14.4. 更新 HashMap 中的值](#144-更新-hashmap-中的值)
-    - [14.5. 哈希函数](#145-哈希函数)
-  - [15. 生命周期](#15-生命周期)
-    - [15.1. 悬垂指针和生命周期](#151-悬垂指针和生命周期)
-    - [15.2. 借用检查](#152-借用检查)
-    - [15.3. 函数中的生命周期](#153-函数中的生命周期)
-  - [16. 方法 Method](#16-方法-method)
-    - [16.1. 定义方法](#161-定义方法)
-    - [16.2. self、\&self 和 \&mut self](#162-selfself-和-mut-self)
-    - [16.3. 方法名跟结构体字段名相同](#163-方法名跟结构体字段名相同)
-    - [16.4. 带有多个参数的方法](#164-带有多个参数的方法)
-    - [16.5. 关联函数](#165-关联函数)
-    - [16.6. 多个 impl 定义](#166-多个-impl-定义)
-    - [16.7. 为枚举实现方法](#167-为枚举实现方法)
-  - [17. 使用 macro\_rules! 来创建宏](#17-使用-macro_rules-来创建宏)
-    - [17.1. 指示符](#171-指示符)
-    - [17.2. 重载](#172-重载)
-    - [17.3. 重复](#173-重复)
-    - [17.4. DRY (不写重复代码)](#174-dry-不写重复代码)
-    - [17.5. DSL（领域专用语言）](#175-dsl领域专用语言)
-    - [17.6. 可变参数接口](#176-可变参数接口)
-  - [18. 错误处理](#18-错误处理)
+    - [14.1. Creating a HashMap](#141-creating-a-hashmap)
+    - [14.2. Ownership transfer](#142-ownership-transfer)
+    - [14.3. Querying a HashMap](#143-querying-a-hashmap)
+    - [14.4. Updating values in a HashMap](#144-updating-values-in-a-hashmap)
+    - [14.5. Hash functions](#145-hash-functions)
+  - [15. Lifetimes](#15-lifetimes)
+    - [15.1. Dangling pointers and lifetimes](#151-dangling-pointers-and-lifetimes)
+    - [15.2. The borrow checker](#152-the-borrow-checker)
+    - [15.3. Lifetimes in functions](#153-lifetimes-in-functions)
+  - [16. Methods](#16-methods)
+    - [16.1. Defining methods](#161-defining-methods)
+    - [16.2. self, &self and &mut self](#162-self-self-and-mut-self)
+    - [16.3. Methods with the same name as a field](#163-methods-with-the-same-name-as-a-field)
+    - [16.4. Methods with more parameters](#164-methods-with-more-parameters)
+    - [16.5. Associated functions](#165-associated-functions)
+    - [16.6. Multiple impl blocks](#166-multiple-impl-blocks)
+    - [16.7. Implementing methods on enums](#167-implementing-methods-on-enums)
+  - [17. Creating macros with macro\_rules!](#17-creating-macros-with-macro_rules)
+    - [17.1. Designators](#171-designators)
+    - [17.2. Overloading](#172-overloading)
+    - [17.3. Repetition](#173-repetition)
+    - [17.4. DRY (Don't Repeat Yourself)](#174-dry-dont-repeat-yourself)
+    - [17.5. DSL (domain-specific languages)](#175-dsl-domain-specific-languages)
+    - [17.6. Variadic interfaces](#176-variadic-interfaces)
+  - [18. Error handling](#18-error-handling)
     - [18.1. panic](#181-panic)
-    - [18.2. Option 和 unwrap](#182-option-和-unwrap)
-    - [18.3. 使用 ? 解开 Option](#183-使用--解开-option)
-    - [18.4. 组合算子：map](#184-组合算子map)
-    - [18.5. 组合算子：and\_then](#185-组合算子and_then)
-    - [18.6. 结果 Result](#186-结果-result)
-    - [18.7. Result 的 map](#187-result-的-map)
-    - [18.8. 给 Result 取别名](#188-给-result-取别名)
-    - [18.9. 提前返回](#189-提前返回)
-    - [18.10. 引入 ?](#1810-引入-)
-    - [18.11. try! 宏](#1811-try-宏)
-    - [18.12. 处理多种错误类型](#1812-处理多种错误类型)
-    - [18.13. 从 Option 中取出 Result](#1813-从-option-中取出-result)
-    - [18.4. 定义一个错误类型](#184-定义一个错误类型)
-    - [18.5. 把错误 “装箱”](#185-把错误-装箱)
-    - [18.6. ? 的其他用法](#186--的其他用法)
-    - [18.7. 包裹错误](#187-包裹错误)
-    - [18.8 遍历Result](#188-遍历result)
-      - [18.8.1 使用 filter\_map() 忽略失败的项](#1881-使用-filter_map-忽略失败的项)
-      - [18.8.2. 使用 collect() 使整个操作失败](#1882-使用-collect-使整个操作失败)
-      - [18.8.3. 使用 Partition() 收集所有合法的值与错误](#1883-使用-partition-收集所有合法的值与错误)
-  - [x. 模块管理](#x-模块管理)
-    - [x.1. 包和 Crate](#x1-包和-crate)
-    - [x.2 定义模块来控制作用域与私有性](#x2-定义模块来控制作用域与私有性)
-    - [x.3 库 Package](#x3-库-package)
-      - [x.3.1. Package 结构](#x31-package-结构)
+    - [18.2. Option and unwrap](#182-option-and-unwrap)
+    - [18.3. Unpacking Options with ?](#183-unpacking-options-with-)
+    - [18.4. Combinators: map](#184-combinators-map)
+    - [18.5. Combinators: and\_then](#185-combinators-and_then)
+    - [18.6. Result](#186-result)
+    - [18.7. map for Result](#187-map-for-result)
+    - [18.8. Aliases for Result](#188-aliases-for-result)
+    - [18.9. Early returns](#189-early-returns)
+    - [18.10. Introducing ?](#1810-introducing-)
+    - [18.11. The try! macro](#1811-the-try-macro)
+    - [18.12. Handling multiple error types](#1812-handling-multiple-error-types)
+    - [18.13. Pulling Results out of Options](#1813-pulling-results-out-of-options)
+    - [18.14. Defining an error type](#1814-defining-an-error-type)
+    - [18.15. Boxing errors](#1815-boxing-errors)
+    - [18.16. Other uses of ?](#1816-other-uses-of-)
+    - [18.17. Wrapping errors](#1817-wrapping-errors)
+    - [18.18. Iterating over Results](#1818-iterating-over-results)
+      - [18.18.1. Ignoring failed items with filter\_map()](#18181-ignoring-failed-items-with-filter_map)
+      - [18.18.2. Failing the entire operation with collect()](#18182-failing-the-entire-operation-with-collect)
+      - [18.18.3. Collecting all valid values and errors with partition()](#18183-collecting-all-valid-values-and-errors-with-partition)
+  - [x. Modules](#x-modules)
+    - [x.1. Packages and crates](#x1-packages-and-crates)
+    - [x.2 Defining modules to control scope and privacy](#x2-defining-modules-to-control-scope-and-privacy)
+    - [x.3 Library packages](#x3-library-packages)
+      - [x.3.1. Package layout](#x31-package-layout)
+## 0. Repository layout
 
-## 1. Rust 的安装(Mac)
+```text
+rust-learn/
+├── README.md        these study notes
+├── docs/images/     images used in the notes
+├── examples/        small examples grouped by topic; each folder is a standalone Cargo project
+└── projects/        complete, larger projects
+```
+
+### 0.1. Examples
+
+| Folder | Topic | Examples | Related notes |
+| ---- | ---- | ---- | -------- |
+| [`01-basics`](examples/01-basics) | Basics: formatted output, enums and `impl` | [`format-demo`](examples/01-basics/format-demo), [`impl-demo`](examples/01-basics/impl-demo), [`type-demo`](examples/01-basics/type-demo) | [3. Basic syntax](#3-basic-syntax), [16. Methods](#16-methods) |
+| [`02-collections`](examples/02-collections) | Collections and linked lists | [`vec-demo`](examples/02-collections/vec-demo), [`hashmap-demo`](examples/02-collections/hashmap-demo), [`hashset-demo`](examples/02-collections/hashset-demo), [`lists`](examples/02-collections/lists), [`linked_list`](examples/02-collections/linked_list), [`reverse_list_demo`](examples/02-collections/reverse_list_demo) | [13. Vector](#13-vectors), [14. HashMap](#14-hashmap) |
+| [`03-modules`](examples/03-modules) | Modules and libraries | [`mod-demo`](examples/03-modules/mod-demo), [`module-demo`](examples/03-modules/module-demo), [`my-lib`](examples/03-modules/my-lib) | [x. Modules](#x-modules) |
+| [`04-errors`](examples/04-errors) | Error handling: `Result`, custom errors | [`error_demo`](examples/04-errors/error_demo), [`result-demo`](examples/04-errors/result-demo) | [18. Error handling](#18-error-handling) |
+| [`05-generics-traits`](examples/05-generics-traits) | Generics, traits, trait objects, lifetimes | [`genericity_demo`](examples/05-generics-traits/genericity_demo), [`trait-demo`](examples/05-generics-traits/trait-demo), [`trait-object`](examples/05-generics-traits/trait-object), [`lifetime-demo`](examples/05-generics-traits/lifetime-demo) | [12. Generics and traits](#12-generics-and-traits), [15. Lifetimes](#15-lifetimes) |
+| [`06-smart-pointers`](examples/06-smart-pointers) | Smart pointers: `Box`, `Arc` | [`mut-demo`](examples/06-smart-pointers/mut-demo), [`rc-demo`](examples/06-smart-pointers/rc-demo) | — |
+| [`07-concurrency`](examples/07-concurrency) | Concurrency: threads, channels, a thread-pool web server | [`thread-demo`](examples/07-concurrency/thread-demo), [`channel-demo`](examples/07-concurrency/channel-demo), [`web-server`](examples/07-concurrency/web-server) | — |
+| [`08-advanced`](examples/08-advanced) | Macros and unsafe | [`macro_rules_demo`](examples/08-advanced/macro_rules_demo), [`unsafe_demo`](examples/08-advanced/unsafe_demo) | [17. macro_rules!](#17-creating-macros-with-macro_rules) |
+| [`09-testing-io`](examples/09-testing-io) | Testing, file I/O, command-line arguments, minigrep | [`test_demo`](examples/09-testing-io/test_demo), [`file-demo`](examples/09-testing-io/file-demo), [`args-demo`](examples/09-testing-io/args-demo), [`minigrep`](examples/09-testing-io/minigrep) | — |
+| [`10-web-axum`](examples/10-web-axum) | Axum web: CORS, SSE, WebSocket chat, path-parameter error handling | [`cors`](examples/10-web-axum/cors), [`sse`](examples/10-web-axum/sse), [`chart`](examples/10-web-axum/chart), [`customize-path-rejection`](examples/10-web-axum/customize-path-rejection) | — |
+
+Each example is a standalone Cargo project; run it from its folder, for example:
+
+```sh
+cd examples/07-concurrency/web-server
+cargo run          # serves hello.html on http://127.0.0.1:7878, exits after two requests
+```
+
+### 0.2. Projects
+
+- [`smart-access-control`](projects/smart-access-control): a smart access control system (software simulation only).
+  Rust backend (Axum, Tokio, SQLx, PostgreSQL, layered following Clean Architecture) plus a
+  React dashboard, with an access decision engine, JWT login with refresh-token rotation,
+  live events over WebSocket, simulated door controllers, Prometheus metrics and Docker deployment.
+  Docs: [English](projects/smart-access-control/README.md) |
+  [中文](projects/smart-access-control/README.zh-CN.md)
+
+## 1. Installing Rust (Mac)
 
 ```text
 brew install rustup-init
 ```
 
-然后执行
+Then run
 
 ```text
 rustup-init
@@ -149,17 +194,17 @@ rustup-init
 
 ## 2. Cargo
 
-Cargo 是 Rust 的构建系统和包管理器。
+Cargo is Rust's build system and package manager.
 
-### 2.1. 使用 Cargo 创建项目
+### 2.1. Creating a project with Cargo
 
 ```text
 cargo new hello_cargo
 ```
 
-进入 hello_cargo 目录并列出文件。将会看到 Cargo 生成了两个文件和一个目录：一个 Cargo.toml 文件，一个 src 目录，以及位于 src 目录中的 main.rs 文件。  
+Go into the hello_cargo directory and list its files. Cargo has generated two files and one directory: a Cargo.toml file, a src directory, and a main.rs file inside src.  
 
-> 文件名: Cargo.toml: 使用 TOML (Tom's Obvious, Minimal Language) 格式，这是 Cargo 配置文件的格式。
+> Filename: Cargo.toml: written in TOML (Tom's Obvious, Minimal Language), the format of Cargo's configuration files.
 
 ```toml
 [package]
@@ -170,24 +215,24 @@ edition = "2021"
 [dependencies]
 ```
 
-第一行，[package]，是一个片段（section）标题，表明下面的语句用来配置一个包。随着我们在这个文件增加更多的信息，还将增加其他片段（section）。  
+The first line, [package], is a section heading: the statements below it configure a package. As we add more information to this file, we will add other sections.  
 
-最后一行，[dependencies]，是罗列项目依赖的片段的开始。在 Rust 中，代码包被称为 crates。  
+The last line, [dependencies], starts the section that lists the project's dependencies. In Rust, packages of code are called crates.  
 
-#### 2.1.1. 从 crates.io 引入依赖包
+#### 2.1.1. Dependencies from crates.io
 
 ```text
 [dependencies]
 time = "0.1.12"
 ```
 
-字符串 "0.1.12" 是一个 semver 格式的版本号，符合 "x.y.z" 的形式，其中 x 被称为主版本major, y 被称为小版本 minor ，而 z 被称为补丁 patch，从左到右，版本的影响范围逐步降低，补丁的更新是无关痛痒的，并不会造成 API 的兼容性被破坏。
+The string "0.1.12" is a semver version number of the form "x.y.z", where x is the major version, y the minor version and z the patch. From left to right, each part has a smaller impact; a patch update is harmless and does not break API compatibility.
 
-"0.1.12" 中并没有任何额外的符号，在版本语义上，它跟使用了 ^ 的 "^0.1.12" 是相同的，都是指定非常具体的版本进行引入。
+"0.1.12" has no extra symbol; semantically it is the same as "^0.1.12" with a caret, and both select a very specific version.
 
->| ^ 指定版本  
+>| ^ version requirements  
 
-与之前的 "0.1.12" 不同， ^ 可以指定一个版本号范围，然后会使用该范围内的最大版本号来引用对应的包。  
+Unlike the plain "0.1.12" before, ^ specifies a range of versions, and the highest version within that range is used.  
 
 ```text
 ^1.2.3  :=  >=1.2.3, <2.0.0
@@ -200,9 +245,9 @@ time = "0.1.12"
 ^0      :=  >=0.0.0, <1.0.0
 ```
 
->| ~ 指定版本  
+>| ~ version requirements  
 
-~ 指定了最小化版本 :
+~ specifies a minimal version:
 
 ```text
 ~1.2.3  := >=1.2.3, <1.3.0
@@ -210,9 +255,9 @@ time = "0.1.12"
 ~1      := >=1.0.0, <2.0.0
 ```
 
->| * 通配符
+>| * wildcard
 
-允许将 * 所在的位置替换成任何数字:
+Allows any number in the position of the *:
 
 ```text
 *     := >=0.0.0
@@ -220,11 +265,11 @@ time = "0.1.12"
 1.2.* := >=1.2.0, <1.3.0
 ```
 
->| 比较符  
+>| Comparison operators  
 
-版本号规则仅针对 crate.io 和基于它搭建的注册服务(例如科大服务源) ，其它注册服务(例如 GitHub )有自己相应的规则。  
+These version rules apply only to crates.io and registries built on it (such as the USTC mirror); other registries (such as GitHub) have their own rules.  
 
-使用比较符的方式来指定一个版本号范围或一个精确的版本号:
+Comparison operators specify a range of versions or an exact version:
 
 ```text
 >= 1.2.0
@@ -233,39 +278,39 @@ time = "0.1.12"
 = 1.2.3
 ```
 
-还能使用比较符进行组合，并通过逗号分隔：
+Comparisons can also be combined, separated by commas:
 
 ```text
 >= 1.2, < 1.5
 ```
 
-#### 2.1.2. 从其它注册服务引入依赖包
+#### 2.1.2. Dependencies from other registries
 
-为了使用 crates.io 之外的注册服务，需要对 $HOME/.cargo/config.toml ($CARGO_HOME 下) 文件进行配置，添加新的服务提供商，有两种方式可以实现。  
+To use a registry other than crates.io, configure $HOME/.cargo/config.toml (under $CARGO_HOME) and add the new registry. There are two ways to do this.  
 
->| 使用科大的注册服务来提升下载速度
+>| Use the USTC registry for faster downloads
 
-在 crates.io 之外添加新的注册服务，修改 .cargo/config.toml 添加以下内容：
+To add a registry alongside crates.io, add the following to .cargo/config.toml:
 
 ```text
 [registries]
 ustc = { index = "https://mirrors.ustc.edu.cn/crates.io-index/" }
 ```
 
-对于这种方式，项目的 Cargo.toml 中的依赖包引入方式也有所不同：
+With this approach, dependencies are declared differently in the project's Cargo.toml:
 
 ```text
 [dependencies]
 time = {  registry = "ustc" }
 ```
 
-在重新配置后，初次构建可能要较久的时间，因为要下载更新 ustc 注册服务的索引文件，这一种使用方式最大的缺点就是在引用依赖包时要指定注册服务: time = { registry = "ustc" }。  
+After this change, the first build may take longer, because the index of the ustc registry has to be downloaded. The main drawback of this approach is that every dependency has to name its registry: time = { registry = "ustc" }.  
 
->| 直接使用新注册服务来替代默认的 crates.io  
+>| Replace the default crates.io with the new registry  
 
-将源 source.crates-io 替换为 ustc，然后在第二部分指定了 ustc 源的地址。  
+Replace the source source.crates-io with ustc, then give the address of the ustc source in the second part.  
 
-注意，如果你要发布包到 crates.io 上，那该包的依赖也必须在 crates.io 上.  
+Note: if you publish a package to crates.io, its dependencies must also be on crates.io.  
 
 ```text
 [source.crates-io]
@@ -275,46 +320,46 @@ replace-with = 'ustc'
 registry = "git://mirrors.ustc.edu.cn/crates.io-index"
 ```
 
-#### 2.1.3. 引入 git 仓库作为依赖包
+#### 2.1.3. Git repositories as dependencies
 
 ```text
 [dependencies]
 regex = { git = "https://github.com/rust-lang/regex" }
 ```
 
-由于没有指定版本，Cargo 会假定我们使用 master 或 main 分支的最新 commit 。你可以使用 rev、tag 或 branch 来指定想要拉取的版本。例如下面代码拉取了 next 分支上的最新 commit：
+Since no version is given, Cargo assumes the latest commit on the master or main branch. Use rev, tag or branch to choose what to pull. For example, the following pulls the latest commit on the next branch:
 
 ```text
 [dependencies]
 regex = { git = "https://github.com/rust-lang/regex", branch = "next" }
 ```
 
-任何非 tag 和 branch 的类型都可以通过 rev 来引入，例如通过最近一次 commit 的哈希值引入: rev = "4c59b707"，再比如远程仓库提供的的具名引用: rev = "refs/pull/493/head"。  
+Anything that is not a tag or branch can be selected with rev, for example the hash of a recent commit: rev = "4c59b707", or a named reference provided by the remote repository: rev = "refs/pull/493/head".  
 
-一旦 git 依赖被拉取下来，该版本就会被记录到 Cargo.lock 中进行锁定。因此 git 仓库中后续新的提交不再会被自动拉取，除非你通过 cargo update 来升级。需要注意的是锁定一旦被删除，那 Cargo 依然会按照 Cargo.toml 中配置的地址和版本去拉取新的版本，如果你配置的版本不正确，那可能会拉取下来一个不兼容的新版本！
+Once a git dependency has been fetched, its version is recorded and locked in Cargo.lock, so later commits in the repository are not pulled automatically unless you upgrade with cargo update. Note that if the lock is deleted, Cargo fetches again according to the address and version in Cargo.toml; if that version is wrong, you may pull an incompatible new version!
 
-#### 2.1.4. 通过路径引入本地依赖包
+#### 2.1.4. Local dependencies by path
 
-本地依赖包都是同一个项目内的内部包，例如假设我们有一个 hello_world 项目( package )，现在在其根目录下新建一个包:
+Local dependencies are internal packages of the same project. For example, suppose we have a hello_world project (package) and create a new package in its root directory:
 
 ```text
-#  在 hello_world/ 目录下
+#  in the hello_world/ directory
 $ cargo new hello_utils
 ```
 
-新建的 hello_utils 文件夹跟 src、Cargo.toml 同级，现在修改 Cargo.toml 让 hello_world 项目引入新建的包:
+The new hello_utils folder sits next to src and Cargo.toml. Now edit Cargo.toml so that the hello_world project uses the new package:
 
 ```text
 [dependencies]
 hello_utils = { path = "hello_utils" }
-# 以下路径也可以
+# this path also works
 # hello_utils = { path = "./hello_utils" }
 # hello_utils = { path = "../hello_world/hello_utils" }
 ```
 
-#### 2.1.5. 根据平台引入依赖
+#### 2.1.5. Platform-specific dependencies
 
-根据特定的平台来引入依赖:
+Include dependencies only on specific platforms:
 
 ```text
 [target.'cfg(windows)'.dependencies]
@@ -330,7 +375,7 @@ native = { path = "native/i686" }
 native = { path = "native/x86_64" }
 ```
 
-还能使用逻辑操作符进行控制，当不是 unix 操作系统时，才对 openssl 进行引入。
+Logical operators work too: here openssl is included only when the operating system is not unix.
 
 ```text
 [target.'cfg(not(unix))'.dependencies]
@@ -339,16 +384,16 @@ openssl = "1.0.1"
 
 #### 2.1.6. [dev-dependencies]
 
-为项目添加只在测试时需要的依赖库，类似于 package.json( Nodejs )文件中的 devDependencies，可以在 Cargo.toml 中添加 [dev-dependencies] 来实现:
+To add libraries that are only needed for tests, similar to devDependencies in a Node.js package.json, add a [dev-dependencies] section to Cargo.toml:
 
 ```text
 [dev-dependencies]
 tempdir = "0.3"
 ```
 
-这里的依赖只会在运行测试、示例和 benchmark 时才会被引入。并且，假设A 包引用了 B，而 B 通过 [dev-dependencies] 的方式引用了 C 包， 那 A 是不会引用 C 包的。
+These dependencies are only used when running tests, examples and benchmarks. Also, if package A depends on B, and B depends on C through [dev-dependencies], A does not depend on C.
 
-还可以指定平台特定的测试依赖包:
+Platform-specific test dependencies are possible too:
 
 ```text
 [target.'cfg(unix)'.dev-dependencies]
@@ -357,36 +402,36 @@ mio = "0.0.1"
 
 #### 2.1.7. [build-dependencies]
 
-指定某些依赖仅用于构建脚本:
+Dependencies used only by the build script:
 
 ```text
 [build-dependencies]
 cc = "1.0.3"
 ```
 
-平台特定的依赖包：
+Platform-specific build dependencies:
 
 [target.'cfg(unix)'.build-dependencies]
 cc = "1.0.3"
 
-#### 2.1.8 选择 features
+#### 2.1.8 Choosing features
 
-如果依赖包提供了条件性的 features，可以指定使用哪一个:
+If a dependency offers optional features, you can choose which ones to use:
 
 ```text
 [dependencies.awesome]
 version = "1.3.5"
-default-features = false # 不要包含默认的 features，而是通过下面的方式来指定
+default-features = false # do not include the default features; list the wanted ones as below
 features = ["secure-password", "civet"]
 ```
 
-#### 2.1.9. 在 Cargo.toml 中重命名依赖
+#### 2.1.9. Renaming dependencies in Cargo.toml
 
-避免在 Rust 代码中使用 use foo as bar  
-依赖某个包的多个版本  
-依赖来自于不同注册服务的同名包  
+Avoids writing use foo as bar in Rust code  
+Depend on several versions of the same package  
+Depend on packages with the same name from different registries  
 
-使用 Cargo 提供的 package key :
+Use the package key provided by Cargo:
 
 ```text
 [package]
@@ -399,76 +444,76 @@ bar = { git = "https://github.com/example/project", package = "foo" }
 baz = { version = "0.1", registry = "custom", package = "foo" }
 ```
 
-### 2.2. 构建并运行 Cargo 项目
+### 2.2. Building and running a Cargo project
 
-> cargo build: 会创建一个可执行文件 target/debug/hello_rust
+> cargo build: creates an executable at target/debug/hello_rust
 
-首次运行 cargo build 时，也会使 Cargo 在项目根目录创建一个新文件：Cargo.lock。  
+The first cargo build also makes Cargo create a new file in the project root: Cargo.lock.  
 
-> cargo run 在一个命令中同时编译并运行生成的可执行文件，比起要记得运行 cargo build 之后再用可执行文件的完整路径来运行程序，使用 cargo run 可以实现完全相同的效果，而且要方便得多，所以大多数开发者会使用 cargo run。  
+> cargo run compiles and runs the executable in one command. Instead of remembering to run cargo build and then the executable by its full path, cargo run does the same and is much more convenient, so most developers use cargo run.  
 
-> cargo check 的命令。该命令快速检查代码确保其可以编译，但并不产生可执行文件.
+> The cargo check command quickly checks that the code compiles, without producing an executable.
 
-### 2.3. Cargo.toml 格式
+### 2.3. Cargo.toml format
 
-Cargo.toml 又被称为清单( manifest )，文件格式是 TOML，每一个清单文件都由以下部分组成：
+Cargo.toml is also called the manifest. Its format is TOML, and every manifest consists of the following parts:
 
-- cargo-features — 只能用于 nightly版本的 feature  
-- [package] — 定义项目( package )的元信息  
-  + name — 名称  
-  + version — 版本  
-  + authors — 开发作者  
+- cargo-features — features only available on nightly  
+- [package] — metadata of the package  
+  + name — name  
+  + version — version  
+  + authors — authors  
   + edition — Rust edition.  
-  + rust-version — 支持的最小化 Rust 版本  
-  + description — 描述  
-  + documentation — 文档 URL  
-  + readme — README 文件的路径  
-  + homepage - 主页 URL  
-  + repository — 源代码仓库的 URL  
-  + license — 开源协议 License.  
-  + license-file — License 文件的路径.  
-  + keywords — 项目的关键词  
-  + categories — 项目分类  
-  + workspace — 工作空间 workspace 的路径  
-  + build — 构建脚本的路径  
-  + links — 本地链接库的名称  
-  + exclude — 发布时排除的文件  
-  + include — 发布时包含的文件  
-  + publish — 用于阻止项目的发布  
-  + metadata — 额外的配置信息，用于提供给外部工具  
-  + default-run — [cargo run] 所使用的默认可执行文件( binary )  
-  + autobins — 禁止可执行文件的自动发现  
-  + autoexamples — 禁止示例文件的自动发现  
-  + autotests — 禁止测试文件的自动发现  
-  + autobenches — 禁止 bench 文件的自动发现  
-  + resolver — 设置依赖解析器( dependency resolver)  
-- Cargo Target 列表: (查看 Target 配置 获取详细设置)  
-  + [lib] — Library target 设置.  
-  + [[bin]] — Binary target 设置.  
-  + [[example]] — Example target 设置.  
-  + [[test]] — Test target 设置.  
-  + [[bench]] — Benchmark target 设置.  
+  + rust-version — minimum supported Rust version  
+  + description — description  
+  + documentation — documentation URL  
+  + readme — path to the README file  
+  + homepage - home page URL  
+  + repository — URL of the source repository  
+  + license — open-source license.  
+  + license-file — path to the license file.  
+  + keywords — keywords of the package  
+  + categories — categories of the package  
+  + workspace — path to the workspace  
+  + build — path to the build script  
+  + links — name of the native library being linked  
+  + exclude — files excluded when publishing  
+  + include — files included when publishing  
+  + publish — prevents the package from being published  
+  + metadata — extra settings for external tools  
+  + default-run — the default binary used by [cargo run]  
+  + autobins — disables automatic discovery of binaries  
+  + autoexamples — disables automatic discovery of examples  
+  + autotests — disables automatic discovery of tests  
+  + autobenches — disables automatic discovery of benches  
+  + resolver — sets the dependency resolver  
+- Cargo target list: (see the target configuration for details)  
+  + [lib] — library target settings.  
+  + [[bin]] — binary target settings.  
+  + [[example]] — example target settings.  
+  + [[test]] — test target settings.  
+  + [[bench]] — benchmark target settings.  
 - Dependency tables:  
-  + [dependencies] — 项目依赖包  
-  + [dev-dependencies] — 用于 examples、tests 和 benchmarks 的依赖包  
-  + [build-dependencies] — 用于构建脚本的依赖包  
-  + [target] — 平台特定的依赖包  
-  + [badges] — 用于在注册服务(例如 crates.io ) 上显示项目的一些状态信息，例如当前的维护状态：活跃中、寻找维护者、deprecated  
-  + [features] — features 可以用于条件编译  
-  + [patch] — 推荐使用的依赖覆盖方式  
-  + [replace] — 不推荐使用的依赖覆盖方式 (deprecated).  
-  + [profile] — 编译器设置和优化  
-  + [workspace] — 工作空间的定义  
+  + [dependencies] — the package's dependencies  
+  + [dev-dependencies] — dependencies for examples, tests and benchmarks  
+  + [build-dependencies] — dependencies for build scripts  
+  + [target] — platform-specific dependencies  
+  + [badges] — status shown on registries (such as crates.io), e.g. maintenance status: actively developed, looking for a maintainer, deprecated  
+  + [features] — features, used for conditional compilation  
+  + [patch] — the recommended way to override dependencies  
+  + [replace] — the deprecated way to override dependencies.  
+  + [profile] — compiler settings and optimizations  
+  + [workspace] — workspace definition  
 
-### 2.4. 发布（release）构建
+### 2.4. Release builds
 
-运行 cargo build --release 并使用 target/release 下的可执行文件进行测试。  
+Run cargo build --release and test with the executable under target/release.  
 
-## 3. 基础语法
+## 3. Basic syntax
 
-### 3.1. 变量
+### 3.1. Variables
 
-在变量名前添加 mut 来使其可变.
+Put mut before a variable name to make it mutable.
 
 ```rs
 fn main() {
@@ -479,17 +524,17 @@ fn main() {
 }
 ```
 
-### 3.2. 常量
+### 3.2. Constants
 
-常量(constants) 是绑定到一个名称的不允许改变的值，不允许对常量使用 mut。
+Constants are values bound to a name that are not allowed to change; mut is not allowed on constants.
 
 ```rs
 const THREE_HOURS_IN_SECONDS: u32 = 60 * 60 * 3;
 ```
 
-### 3.3. 隐藏
+### 3.3. Shadowing
 
-可以用相同变量名称来隐藏一个变量，以及重复使用 let 关键字来多次隐藏.
+A variable can be shadowed by declaring a new one with the same name, using the let keyword again, as many times as needed.
 
 ```rs
 fn main() {
@@ -503,19 +548,19 @@ fn main() {
 }
 ```
 
-mut 与隐藏的另一个区别是，当再次使用 let 时，实际上创建了一个新变量，可以改变值的类型，并且复用这个名字。  
+Another difference between mut and shadowing: using let again actually creates a new variable, which can change the type of the value while reusing the name.  
 
-## 4. 数据类型
+## 4. Data types
 
-### 4.1. 标量类型
+### 4.1. Scalar types
 
-标量（scalar）类型代表一个单独的值。Rust 有四种基本的标量类型：整型、浮点型、布尔类型和字符类型。
+A scalar type represents a single value. Rust has four primary scalar types: integers, floating-point numbers, Booleans and characters.
 
-#### 4.1.1. 整型
+#### 4.1.1. Integer types
 
-没有小数部分的数字.  
+Numbers without a fractional part.  
 
-| 长度	| 有符号 | 无符号 |
+| Length | Signed | Unsigned |
 |  ----  | ----  |
 | 8-bit |  i8 | u8 |
 | 16-bit | i16 | u16 |
@@ -524,39 +569,39 @@ mut 与隐藏的另一个区别是，当再次使用 let 时，实际上创建�
 | 128-bit | i128 | u128 |
 | arch | isize | usize |
 
-有符号 和 无符号 代表数字能否为负值.  
+Signed and unsigned refer to whether the number can be negative.  
 
-每一个有符号的变体可以储存包含从 -2^(n-1)到 2^(n-1) - 1 在内的数字，这里 n 是变体使用的位数。所以 i8 可以储存从 -2^7 到 2^7 - 1 在内的数字，也就是从 -128 到 127。无符号的变体可以储存从 0 到 2^n - 1 的数字，所以 u8 可以储存从 0 到 2^8 - 1 的数字，也就是从 0 到 255。  
+Each signed variant can store numbers from -2^(n-1) to 2^(n-1) - 1 inclusive, where n is the number of bits the variant uses. So i8 can store numbers from -2^7 to 2^7 - 1, i.e. from -128 to 127. Unsigned variants can store numbers from 0 to 2^n - 1, so u8 can store numbers from 0 to 2^8 - 1, i.e. from 0 to 255.  
 
-isize 和 usize 类型依赖运行程序的计算机架构：64 位架构上它们是 64 位的， 32 位架构上它们是 32 位的。  
+The isize and usize types depend on the architecture of the computer the program runs on: 64 bits on a 64-bit architecture, 32 bits on a 32-bit architecture.  
 
-| 数字字面值 | 例子 |
-| Decimal (十进制) | 98_222 |
-| Hex (十六进制) | 0xff |
-| Octal (八进制) | 0o77 |
-| Binary (二进制) | 0b1111_0000 |
-| Byte (单字节字符)(仅限于u8) | b'A' |
+| Number literal | Example |
+| Decimal | 98_222 |
+| Hex | 0xff |
+| Octal | 0o77 |
+| Binary | 0b1111_0000 |
+| Byte (u8 only) | b'A' |
 
-如果拿不定主意，Rust 的默认类型通常是个不错的起点，数字类型默认是 i32。isize 或 usize 主要作为某些集合的索引。  
+If you're unsure, Rust's defaults are generally a good place to start: integer types default to i32. isize or usize are mainly used for indexing collections.  
 
-> 整型溢出
+> Integer overflow
 
-比方说有一个 u8 ，它可以存放从零到 255 的值。那么当你将其修改为 256 时会发生什么呢？这被称为 “整型溢出”（“integer overflow” ），这会导致以下两种行为之一的发生。当在 debug 模式编译时，Rust 检查这类问题并使程序 panic，这个术语被 Rust 用来表明程序因错误而退出。  
+Say you have a u8, which can hold values from zero to 255. What happens if you change it to 256? This is called "integer overflow", and it results in one of two behaviors. When compiling in debug mode, Rust checks for it and makes the program panic, the term Rust uses when a program exits with an error.  
 
-在 release 构建中，Rust 不检测溢出，相反会进行一种被称为二进制补码包装（two’s complement wrapping）的操作。简而言之，值 256 变成 0，值 257 变成 1，依此类推。依赖整型溢出被认为是一种错误，即便可能出现这种行为。如果你确实需要这种行为，标准库中有一个类型显式提供此功能，Wrapping。 为了显式地处理溢出的可能性，你可以使用标准库在原生数值类型上提供的以下方法:  
+In release builds, Rust does not check for overflow and instead performs two's complement wrapping. In short, 256 becomes 0, 257 becomes 1, and so on. Relying on integer overflow is considered an error, even though this behavior can happen. If you really need it, the standard library has a type that provides it explicitly: Wrapping. To handle possible overflow explicitly, use these methods that the standard library provides on primitive numeric types:  
 
-所有模式下都可以使用 wrapping_* 方法进行包装，如 wrapping_add  
-如果 checked_* 方法出现溢出，则返回 None值  
-用 overflowing_* 方法返回值和一个布尔值，表示是否出现溢出  
-用 saturating_* 方法在值的最小值或最大值处进行饱和处理  
+wrap in all modes with the wrapping_* methods, such as wrapping_add  
+return None on overflow with the checked_* methods  
+return the value and a Boolean indicating overflow with the overflowing_* methods  
+saturate at the minimum or maximum value with the saturating_* methods  
 
-#### 4.1.2. 浮点型
+#### 4.1.2. Floating-point types
 
-rust 的浮点数类型是 f32 和 f64，分别占 32 位和 64 位。默认类型是 f64，因为在现代 CPU 中，它与 f32 速度几乎一样，不过精度更高。所有的浮点型都是有符号的。  
+Rust's floating-point types are f32 and f64, which are 32 and 64 bits in size. The default is f64, because on modern CPUs it is roughly as fast as f32 but more precise. All floating-point types are signed.  
 
-### 4.2. 数值运算
+### 4.2. Numeric operations
 
-加法、减法、乘法、除法和取余。整数除法会向下舍入到最接近的整数。  
+Addition, subtraction, multiplication, division and remainder. Integer division rounds down to the nearest integer.  
 
 ```rs
 fn main() {
@@ -578,9 +623,9 @@ fn main() {
 }
 ```
 
-### 4.3. 布尔型
+### 4.3. The Boolean type
 
-Rust 中的布尔类型有两个可能的值：true 和 false。Rust 中的布尔类型使用 bool 表示。  
+A Boolean in Rust has two possible values: true and false. The Boolean type is written bool.  
 
 ```rs
 fn main() {
@@ -589,17 +634,17 @@ fn main() {
 }
 ```
 
-### 4.4. 字符类型
+### 4.4. The character type
 
-用单引号声明 char 字面量，使用双引号声明字符串字面量。
+char literals use single quotes; string literals use double quotes.
 
-### 4.5. 复合类型
+### 4.5. Compound types
 
-复合类型（Compound types）可以将多个值组合成一个类型。Rust 有两个原生的复合类型：元组（tuple）和数组（array）。
+Compound types group multiple values into one type. Rust has two primitive compound types: tuples and arrays.
 
-#### 4.5.1. 元组类型
+#### 4.5.1. The tuple type
 
-元组是一个将多个其他类型的值组合进一个复合类型的主要方式。元组长度固定：一旦声明，其长度不会增大或缩小。  
+A tuple is the general way of grouping values of different types into one compound type. Tuples have a fixed length: once declared, they cannot grow or shrink.  
 
 ```rs
 fn main() {
@@ -607,7 +652,7 @@ fn main() {
 }
 ```
 
-可以使用模式匹配（pattern matching）来解构（destructure）元组值
+Pattern matching can be used to destructure a tuple value
 
 ```rs
 fn main() {
@@ -617,7 +662,7 @@ fn main() {
 }
 ```
 
-可以使用点号（.）后跟值的索引来直接访问.
+A tuple element can be accessed directly with a period (.) followed by its index.
 
 ```rs
 fn main() {
@@ -628,31 +673,31 @@ fn main() {
 }
 ```
 
-不带任何值的元组有个特殊的名称，叫做 单元（unit） 元组。这种值以及对应的类型都写作 ()，表示空值或空的返回类型。如果表达式不返回任何其他值，则会隐式返回单元值。
+The tuple without any values has a special name: the unit tuple. Both the value and its type are written () and represent an empty value or an empty return type. Expressions implicitly return the unit value if they don't return any other value.
 
-#### 4.5.2. 数组类型
+#### 4.5.2. The array type
 
-与元组不同，数组中的每个元素的类型必须相同。Rust中的数组长度是固定的。  
+Unlike a tuple, every element of an array must have the same type. Arrays in Rust have a fixed length.  
 
-数组并不如 vector 类型灵活。vector 类型是标准库提供的一个 允许 增长和缩小长度的类似数组的集合类型。当不确定是应该使用数组还是 vector 的时候，那么很可能应该使用 vector。  
+An array is not as flexible as a vector. A vector is a similar collection type provided by the standard library that is allowed to grow and shrink. If you're unsure whether to use an array or a vector, you should probably use a vector.  
 
 ```rs
 let a: [i32; 5] = [1, 2, 3, 4, 5];
 ```
 
-这里，i32 是每个元素的类型。分号之后，数字 5 表明该数组包含五个元素。
+Here, i32 is the type of each element. After the semicolon, the number 5 says the array contains five elements.
 
-还可以通过在方括号中指定初始值加分号再加元素个数的方式来创建一个每个元素都为相同值的数组：
+You can also create an array where every element has the same value by giving the initial value, a semicolon, and the length in square brackets:
 
 ```rs
 let a = [3; 5];
 ```
 
-变量名为 a 的数组将包含 5 个元素，这些元素的值最初都将被设置为 3。这种写法与 let a = [3, 3, 3, 3, 3]; 效果相同，但更简洁。
+The array named a will contain 5 elements, all initially set to 3. This is the same as writing let a = [3, 3, 3, 3, 3]; but more concise.
 
-> 访问数组元素
+> Accessing array elements
 
-使用索引来访问数组的元素
+Use indexing to access the elements of an array
 
 ```rs
 fn main() {
@@ -663,9 +708,9 @@ fn main() {
 }
 ```
 
-## 5. 函数
+## 5. Functions
 
-Rust 代码中的函数和变量名使用 snake case 规范风格。在 snake case 中，所有字母都是小写并使用下划线分隔单词。
+Rust code uses snake case for function and variable names: all letters are lowercase and underscores separate words.
 
 ```rs
 fn main() {
@@ -678,11 +723,11 @@ fn another_function() {
 }
 ```
 
-Rust 不关心函数定义所在的位置，只要函数被调用时出现在调用之处可见的作用域内就行。  
+Rust doesn't care where functions are defined, only that they are defined in a scope visible to the caller.  
 
-### 5.1. 参数
+### 5.1. Parameters
 
-在函数签名中，必须 声明每个参数的类型。
+In function signatures, you must declare the type of each parameter.
 
 ```rs
 fn main() {
@@ -694,11 +739,11 @@ fn print_labeled_measurement(value: i32, unit_label: char) {
 }
 ```
 
-### 5.2. 语句和表达式
+### 5.2. Statements and expressions
 
-> 语句（Statements）是执行一些操作但不返回值的指令。  
+> Statements are instructions that perform some action and do not return a value.  
 
-let y = 6; 是一个语句。  
+let y = 6; is a statement.  
 
 ```rs
 fn main() {
@@ -706,9 +751,9 @@ fn main() {
 }
 ```
 
-> 表达式（Expressions）计算并产生一个值。
+> Expressions evaluate to a resulting value.
 
-函数调用是一个表达式。宏调用是一个表达式。用大括号创建的一个新的块作用域也是一个表达式.
+Calling a function is an expression. Calling a macro is an expression. A new block scope created with curly braces is also an expression.
 
 ```rs
 fn main() {
@@ -721,7 +766,7 @@ fn main() {
 }
 ```
 
-表达式是一个代码块，它的值是 4。
+The expression is a block whose value is 4.
 
 ```rs
 {
@@ -730,10 +775,10 @@ fn main() {
 }
 ```
 
-### 5.3. 函数的返回值
+### 5.3. Function return values
 
-要在箭头（->）后声明它的类型.  
-函数的返回值等同于函数体最后一个表达式的值。使用 return 关键字和指定值，可从函数中提前返回；但大部分函数隐式的返回最后的表达式.
+Declare the return type after an arrow (->).  
+The return value of a function is the value of the final expression in its body. You can return early with the return keyword and a value, but most functions implicitly return the last expression.
 
 ```rs
 fn main() {
@@ -747,7 +792,7 @@ fn plus_one(x: i32) -> i32 {
 }
 ```
 
-运行代码会打印出 The value of x is: 6。但如果在包含 x + 1 的行尾加上一个分号，把它从表达式变成语句，将看到一个错误。
+Running the code prints The value of x is: 6. But if you put a semicolon at the end of the line containing x + 1, turning it from an expression into a statement, you get an error.
 
 ```rs
 fn main() {
@@ -773,13 +818,13 @@ For more information about this error, try `rustc --explain E0308`.
 error: could not compile `functions` due to previous error
 ```
 
-“mismatched types”（类型不匹配），揭示了代码的核心问题。函数 plus_one 的定义说明它要返回一个 i32 类型的值，不过语句并不会返回值，使用单位类型 () 表示不返回值。因为不返回值与函数定义相矛盾，从而出现一个错误。在输出中，Rust 提供了一条信息，可能有助于纠正这个错误：它建议删除分号，这会修复这个错误。
+"mismatched types" reveals the core problem. The definition of plus_one says it returns an i32, but statements don't evaluate to a value, which is expressed by the unit type (). Because returning nothing contradicts the function definition, you get an error. In the output, Rust gives a hint that may help fix it: it suggests removing the semicolon, which would fix the error.
 
-## 6. 控制流
+## 6. Control flow
 
-Rust 代码中最常见的用来控制执行流的结构是 if 表达式和循环。  
+The most common constructs for controlling the flow of execution in Rust code are if expressions and loops.  
 
-### 6.1. if 表达式
+### 6.1. if expressions
 
 ```rs
 fn main() {
@@ -793,7 +838,7 @@ fn main() {
 }
 ```
 
-> 在 let 语句中使用 if
+> Using if in a let statement
 
 ```rs
 fn main() {
@@ -804,16 +849,16 @@ fn main() {
 }
 ```
 
-### 6.2. 使用循环重复执行
+### 6.2. Repetition with loops
 
-Rust 有三种循环：loop、while 和 for。
+Rust has three kinds of loops: loop, while and for.
 
-#### 6.2.1. 使用 loop 重复执行代码
+#### 6.2.1. Repeating code with loop
 
-可以使用 break 关键字来告诉程序何时停止循环。  
-循环中的 continue 关键字告诉程序跳过这个循环迭代中的任何剩余代码，并转到下一个迭代。  
+Use the break keyword to tell the program when to stop the loop.  
+The continue keyword in a loop tells the program to skip the rest of the current iteration and go to the next one.  
 
-> 循环返回值
+> Returning values from loops
 
 ```rs
 fn main() {
@@ -828,9 +873,9 @@ fn main() {
 }
 ```
 
-> 循环标签：在多个循环之间消除歧义
+> Loop labels to disambiguate between multiple loops
 
-如果存在嵌套循环，break 和 continue 应用于此时最内层的循环。可以选择在一个循环上指定一个 循环标签（loop label），然后将标签与 break 或 continue 一起使用，使这些关键字应用于已标记的循环, 而不是最内层的循环。
+With nested loops, break and continue apply to the innermost loop at that point. You can optionally give a loop a loop label and use it with break or continue, so that those keywords apply to the labeled loop instead of the innermost one.
 
 ```rs
 fn main() {
@@ -856,7 +901,7 @@ fn main() {
 }
 ```
 
-#### 6.2.2. while 条件循环
+#### 6.2.2. Conditional loops with while
 
 ```rs
 fn main() {
@@ -872,7 +917,7 @@ fn main() {
 }
 ```
 
-#### 6.2.3. 使用 for 遍历集合
+#### 6.2.3. Looping through a collection with for
 
 ```rs
 fn main() {
@@ -884,25 +929,25 @@ fn main() {
 }
 ```
 
-## 7. 所有权
+## 7. Ownership
 
-所有程序都必须管理其运行时使用计算机内存的方式。一些语言中具有垃圾回收机制，在程序运行时不断地寻找不再使用的内存；在另一些语言中，程序员必须亲自分配和释放内存。Rust 则选择了第三种方式：通过所有权系统管理内存，编译器在编译时会根据一系列的规则进行检查。如果违反了任何这些规则，程序都不能编译。在运行时，所有权系统的任何功能都不会减慢程序。
+Every program has to manage the way it uses the computer's memory while running. Some languages have garbage collection that constantly looks for memory no longer in use while the program runs; in others, the programmer must explicitly allocate and free memory. Rust takes a third approach: memory is managed through a system of ownership, with a set of rules that the compiler checks at compile time. If any of the rules are violated, the program won't compile. None of the features of ownership slow down the program while it runs.
 
-> 所有权规则
+> Ownership rules
 
-1. Rust 中的每一个值都有一个被称为其 所有者（owner）的变量。
-2. 值在任一时刻有且只有一个所有者。
-3. 当所有者（变量）离开作用域，这个值将被丢弃。
+1. Each value in Rust has a variable that is called its owner.
+2. There can only be one owner at a time.
+3. When the owner (variable) goes out of scope, the value is dropped.
 
-> 变量作用域
+> Variable scope
 
-作用域（scope）是一个项（item）在程序中有效的范围。
+A scope is the range within a program for which an item is valid.
 
-> 内存与分配
+> Memory and allocation
 
-内存在拥有它的变量离开作用域后就被自动释放。
+Memory is automatically freed once the variable that owns it goes out of scope.
 
-1. 变量与数据交互的方式（一）：移动
+1. Ways variables and data interact (1): move
 
 ```rs
 fn main() {
@@ -913,7 +958,7 @@ fn main() {
 }
 ```
 
-为了确保内存安全，在 let s2 = s1 之后，Rust 认为 s1 不再有效，因此 Rust 不需要在 s1 离开作用域后清理任何东西。
+To ensure memory safety, after let s2 = s1 Rust considers s1 no longer valid, so Rust doesn't need to free anything when s1 goes out of scope.
 
 ```text
  --> src/main.rs:5:28
@@ -930,11 +975,11 @@ For more information about this error, try `rustc --explain E0382`.
 error: could not compile `ownership` due to previous error
 ```
 
-在其他语言中听说过术语 浅拷贝（shallow copy）和 深拷贝（deep copy），那么拷贝指针、长度和容量而不拷贝数据可能听起来像浅拷贝。不过因为 Rust 同时使第一个变量无效了，这个操作被称为 移动（move），而不是浅拷贝。  
+If you've heard the terms shallow copy and deep copy in other languages, copying the pointer, length and capacity without copying the data probably sounds like a shallow copy. But because Rust also invalidates the first variable, this operation is known as a move rather than a shallow copy.  
 
-Rust 永远也不会自动创建数据的 “深拷贝”。因此，任何 自动 的复制可以被认为对运行时性能影响较小。
+Rust never automatically creates "deep" copies of your data. Therefore, any automatic copying can be assumed to be inexpensive in terms of runtime performance.
 
-2. 变量与数据交互的方式（二）：克隆
+2. Ways variables and data interact (2): clone
 
 ```rs
 fn main() {
@@ -945,7 +990,7 @@ fn main() {
 }
 ```
 
-3. 只在栈上的数据：拷贝
+3. Stack-only data: copy
 
 ```rs
 fn main() {
@@ -956,82 +1001,82 @@ fn main() {
 }
 ```
 
-一个通用的规则，任何一组简单标量值的组合都可以实现 Copy，任何不需要分配内存或某种形式资源的类型都可以实现 Copy 。如下是一些 Copy 的类型：
+As a general rule, any group of simple scalar values can implement Copy, and nothing that requires allocation or is some form of resource can implement Copy. Here are some Copy types:
 
-- 所有整数类型，比如 u32。
-- 布尔类型，bool，它的值是 true 和 false。
-- 所有浮点数类型，比如 f64。
-- 字符类型，char。
-- 元组，当且仅当其包含的类型也都实现 Copy 的时候。比如，(i32, i32) 实现了 Copy，但 (i32, String) 就没有。
+- All integer types, such as u32.
+- The Boolean type, bool, with values true and false.
+- All floating-point types, such as f64.
+- The character type, char.
+- Tuples, if they only contain types that also implement Copy. For example, (i32, i32) implements Copy, but (i32, String) does not.
 
-> 所有权与函数
+> Ownership and functions
 
 ```rs
 fn main() {
-    let s = String::from("hello");  // s 进入作用域
+    let s = String::from("hello");  // s comes into scope
 
-    takes_ownership(s);             // s 的值移动到函数里 ...
-                                    // ... 所以到这里不再有效
+    takes_ownership(s);             // s's value moves into the function...
+                                    // ... and so is no longer valid here
 
-    let x = 5;                      // x 进入作用域
+    let x = 5;                      // x comes into scope
 
-    makes_copy(x);                  // x 应该移动函数里，
-                                    // 但 i32 是 Copy 的，
-                                    // 所以在后面可继续使用 x
+    makes_copy(x);                  // x would move into the function,
+                                    // but i32 is Copy,
+                                    // so it's okay to still use x afterward
 
-} // 这里, x 先移出了作用域，然后是 s。但因为 s 的值已被移走，
-  // 没有特殊之处
+} // Here, x goes out of scope, then s. But because s's value was moved,
+  // nothing special happens
 
-fn takes_ownership(some_string: String) { // some_string 进入作用域
+fn takes_ownership(some_string: String) { // some_string comes into scope
     println!("{}", some_string);
-} // 这里，some_string 移出作用域并调用 `drop` 方法。
-  // 占用的内存被释放
+} // Here, some_string goes out of scope and `drop` is called.
+  // The backing memory is freed
 
-fn makes_copy(some_integer: i32) { // some_integer 进入作用域
+fn makes_copy(some_integer: i32) { // some_integer comes into scope
     println!("{}", some_integer);
-} // 这里，some_integer 移出作用域。没有特殊之处
+} // Here, some_integer goes out of scope. Nothing special happens
 ```
 
-> 返回值与作用域
+> Return values and scope
 
-返回值也可以转移所有权。
+Returning values can also transfer ownership.
 
 ```rs
 fn main() {
-    let s1 = gives_ownership();         // gives_ownership 将返回值
-                                        // 转移给 s1
+    let s1 = gives_ownership();         // gives_ownership moves its return
+                                        // value into s1
 
-    let s2 = String::from("hello");     // s2 进入作用域
+    let s2 = String::from("hello");     // s2 comes into scope
 
-    let s3 = takes_and_gives_back(s2);  // s2 被移动到
-                                        // takes_and_gives_back 中,
-                                        // 它也将返回值移给 s3
-} // 这里, s3 移出作用域并被丢弃。s2 也移出作用域，但已被移走，
-  // 所以什么也不会发生。s1 离开作用域并被丢弃
+    let s3 = takes_and_gives_back(s2);  // s2 is moved into
+                                        // takes_and_gives_back, which also
+                                        // moves its return value into s3
+} // Here, s3 goes out of scope and is dropped. s2 also goes out of scope, but was moved,
+  // so nothing happens. s1 goes out of scope and is dropped
 
-fn gives_ownership() -> String {             // gives_ownership 会将
-                                             // 返回值移动给
-                                             // 调用它的函数
+fn gives_ownership() -> String {             // gives_ownership will move its
+                                             // return value into the function
+                                             // that calls it
 
-    let some_string = String::from("yours"); // some_string 进入作用域.
+    let some_string = String::from("yours"); // some_string comes into scope.
 
-    some_string                              // 返回 some_string 
-                                             // 并移出给调用的函数
+    some_string                              // some_string is returned and 
+                                             // moves out to the calling function
                                              // 
 }
 
-// takes_and_gives_back 将传入字符串并返回该值
-fn takes_and_gives_back(a_string: String) -> String { // a_string 进入作用域
+// takes_and_gives_back takes a String and returns it
+fn takes_and_gives_back(a_string: String) -> String { // a_string comes into scope
 
-    a_string  // 返回 a_string 并移出给调用的函数
+    a_string  // a_string is returned and moves out to the calling function
 }
 ```
 
-### 7.1. 引用与借用
+### 7.1. References and borrowing
 
-> 引用
+> References
 
-引用（reference）像一个指针，因为它是一个地址，可以由此访问储存于该地址的属于其他变量的数据。与指针不同，引用确保指向某个特定类型的有效值。
+A reference is like a pointer in that it is an address we can follow to access data stored at that address, which is owned by some other variable. Unlike a pointer, a reference is guaranteed to point to a valid value of a particular type.
 
 ```rs
 fn main() {
@@ -1045,20 +1090,20 @@ fn calculate_length(s: &String) -> usize {
 }
 ```
 
-& 符号就是 引用，它们允许你使用值但不获取其所有权。
+The & signs are references; they let you use a value without taking ownership of it.
 
-![引用](/images/1.svg)
+![Reference](/docs/images/1.svg)
 
-&s1 语法让我们创建一个 指向 值 s1 的引用，但是并不拥有它。因为并不拥有这个值，所以当引用停止使用时，它所指向的值也不会被丢弃。
+The &s1 syntax creates a reference that refers to the value of s1 but does not own it. Because it does not own it, the value it points to is not dropped when the reference stops being used.
 
 ```rs
 let s1 = String::from("hello");
 let len = calculate_length(&s1);
 ```
 
-> 借用
+> Borrowing
 
-将创建一个引用的行为称为 借用（borrowing）。
+The action of creating a reference is called borrowing.
 
 ```rs
 fn main() {
@@ -1072,7 +1117,7 @@ fn change(some_string: &String) {
 }
 ```
 
-不允许修改引用的值。
+Modifying a borrowed value through a plain reference is not allowed.
 
 ```text
  --> src/main.rs:8:5
@@ -1086,11 +1131,11 @@ For more information about this error, try `rustc --explain E0596`.
 error: could not compile `ownership` due to previous error
 ```
 
-> 可变引用
+> Mutable references
 
-允许我们修改一个借用的值，这就是 可变引用（mutable reference）：
+A mutable reference lets us modify a borrowed value:
 
-修复上述代码的错误: 
+Fixing the error in the code above: 
 
 ```rs
 fn main() {
@@ -1103,9 +1148,9 @@ fn change(some_string: &mut String) {
 }
 ```
 
-将 s 改为 mut。然后在调用 change 函数的地方创建一个可变引用 &mut s，并更新函数签名以接受一个可变引用 some_string: &mut String。这就非常清楚地表明，change 函数将改变它所借用的值。
+Change s to mut. Then create a mutable reference with &mut s where change is called, and update the function signature to accept a mutable reference: some_string: &mut String. This makes it very clear that change will mutate the value it borrows.
 
-可变引用有一个很大的限制：在同一时间只能有一个对某一特定数据的可变引用。这些尝试创建两个 s 的可变引用的代码会失败：
+Mutable references have one big restriction: you can have only one mutable reference to a particular piece of data at a time. This code, which tries to create two mutable references to s, fails:
 
 ```rs
 fn main() {
@@ -1118,7 +1163,7 @@ fn main() {
 }
 ```
 
-报错：
+Error:
 
 ```text
 4 |     let r1 = &mut s;
@@ -1133,51 +1178,51 @@ For more information about this error, try `rustc --explain E0499`.
 error: could not compile `ownership` due to previous error
 ```
 
-可以使用大括号来创建一个新的作用域，以允许拥有多个可变引用，只是不能 同时 拥有：
+Curly brackets can create a new scope, allowing multiple mutable references, just not simultaneous ones:
 
 ```rs
 fn main() {
     let mut s = String::from("hello");
     {
         let r1 = &mut s;
-    } // r1 在这里离开了作用域，所以我们完全可以创建一个新的引用
+    } // r1 goes out of scope here, so we can make a new reference with no problems
     let r2 = &mut s;
 }
 ```
 
-不能在拥有不可变引用的同时拥有可变引用。不可变引用的用户可不希望在他们的眼皮底下值就被意外的改变了！然而，多个不可变引用是可以的，因为没有哪个只能读取数据的人有能力影响其他人读取到的数据。
+You also cannot have a mutable reference while you have an immutable one to the same value. Users of an immutable reference don't expect the value to suddenly change out from under them! Multiple immutable references are fine, though, because no one who is only reading the data can affect anyone else's reading of it.
 
 ```rs
 fn main() {
   let mut s = String::from("hello");
 
-  let r1 = &s; // 没问题
-  let r2 = &s; // 没问题
-  let r3 = &mut s; // 大问题
+  let r1 = &s; // no problem
+  let r2 = &s; // no problem
+  let r3 = &mut s; // BIG PROBLEM
 
   println!("{}, {}, and {}", r1, r2, r3);
 }
 ```
 
-一个引用的作用域从声明的地方开始一直持续到最后一次使用为止。例如，因为最后一次使用不可变引用（println!)，发生在声明可变引用之前，所以如下代码是可以编译的：
+A reference's scope starts where it is introduced and continues until the last time it is used. For example, this code compiles, because the last use of the immutable references (println!) happens before the mutable reference is introduced:
 
 ```rs
 fn main() {
   let mut s = String::from("hello");
 
-  let r1 = &s; // 没问题
-  let r2 = &s; // 没问题
+  let r1 = &s; // no problem
+  let r2 = &s; // no problem
   println!("{} and {}", r1, r2);
-  // 此位置之后 r1 和 r2 不再使用
+  // r1 and r2 are not used after this point
 
-  let r3 = &mut s; // 没问题
+  let r3 = &mut s; // no problem
   println!("{}", r3);
 }
 ```
 
-> 悬垂引用（Dangling References）
+> Dangling references
 
-悬垂指针是其指向的内存可能已经被分配给其它持有者。相比之下，在 Rust 中编译器确保引用永远也不会变成悬垂状态：当你拥有一些数据的引用，编译器确保数据不会在其引用之前离开作用域。  
+A dangling pointer references memory that may have been given to someone else. In Rust, by contrast, the compiler guarantees that references will never be dangling: if you have a reference to some data, the compiler ensures the data will not go out of scope before the reference does.  
 
 ```rs
 fn main() {
@@ -1191,7 +1236,7 @@ fn dangle() -> &String {
 }
 ```
 
-错误：
+Error:
 
 ```text
  --> src/main.rs:5:16
@@ -1209,7 +1254,7 @@ For more information about this error, try `rustc --explain E0106`.
 error: could not compile `ownership` due to previous error
 ```
 
-解决方法是直接返回 String：
+The solution is to return the String directly:
 
 ```rs
 fn no_dangle() -> String {
@@ -1219,9 +1264,9 @@ fn no_dangle() -> String {
 }
 ```
 
-### 7.2. Slice 类型
+### 7.2. The slice type
 
-字符串 slice（string slice）是 String 中一部分值的引用
+A string slice is a reference to part of a String
 
 ```rs
 let s = String::from("hello world");
@@ -1229,9 +1274,9 @@ let hello = &s[0..5];
 let world = &s[6..11];
 ```
 
-使用一个由中括号中的 [starting_index..ending_index] 指定的 range 创建一个 slice，其中 starting_index 是 slice 的第一个位置，ending_index 则是 slice 最后一个位置的后一个值。在其内部，slice 的数据结构存储了 slice 的开始位置和长度，长度对应于 ending_index 减去 starting_index 的值。所以对于 let world = &s[6..11]; 的情况，world 将是一个包含指向 s 索引 6 的指针和长度值 5 的 slice。
+A slice is created with a range in brackets, [starting_index..ending_index], where starting_index is the first position in the slice and ending_index is one more than the last position. Internally, the slice data structure stores the starting position and the length, which is ending_index minus starting_index. So for let world = &s[6..11];, world is a slice that contains a pointer to index 6 of s and a length of 5.
 
-对于 Rust 的 .. range 语法，如果想要从索引 0 开始，可以不写两个点号之前的值。如下两个语句是相同的：
+With Rust's .. range syntax, if you want to start at index 0 you can drop the value before the two periods. These two statements are equivalent:
 
 ```rs
 let s = String::from("hello");
@@ -1240,7 +1285,7 @@ let slice = &s[0..2];
 let slice = &s[..2];
 ```
 
-如果 slice 包含 String 的最后一个字节，也可以舍弃尾部的数字。
+If the slice includes the last byte of the String, you can drop the trailing number too.
 
 ```rs
 let s = String::from("hello");
@@ -1251,14 +1296,14 @@ let slice = &s[3..len];
 let slice = &s[3..];
 ```
 
-同时舍弃这两个值来获取整个字符串的 slice。
+Drop both values to take a slice of the entire string.
 
 ```rs
 let slice = &s[0..len];
 let slice = &s[..];
 ```
 
-定义一个获取字符串 slice 而不是 String 引用的函数使得我们的 API 更加通用并且不会丢失任何功能：
+Writing a function that takes a string slice instead of a reference to a String makes our API more general without losing any functionality:
 
 ```rs
 fn first_word(s: &str) -> &str {
@@ -1276,30 +1321,30 @@ fn first_word(s: &str) -> &str {
 fn main() {
   let my_string = String::from("hello world");
 
-  // `first_word` 适用于 `String`（的 slice），整体或全部
+  // `first_word` works on slices of `String`s, whether partial or whole
   let word = first_word(&my_string[0..6]);
   let word = first_word(&my_string[..]);
-  // `first_word` 也适用于 `String` 的引用，
-  // 这等价于整个 `String` 的 slice
+  // `first_word` also works on references to `String`s, which are
+  // equivalent to whole slices of `String`s
   let word = first_word(&my_string);
 
   let my_string_literal = "hello world";
 
-  // `first_word` 适用于字符串字面值，整体或全部
+  // `first_word` works on slices of string literals, whether partial or whole
   let word = first_word(&my_string_literal[0..6]);
   let word = first_word(&my_string_literal[..]);
 
-  // 因为字符串字面值已经 **是** 字符串 slice 了，
-  // 这也是适用的，无需 slice 语法！
+  // Because string literals **are** string slices already,
+  // this works too, without the slice syntax!
   let word = first_word(my_string_literal);
 }
 ```
 
-## 8. 结构体
+## 8. Structs
 
-结构体需要命名各部分数据以便能清楚的表明其值的意义。由于有了这些名字，结构体比元组更灵活：不需要依赖顺序来指定或访问实例中的值。
+Structs name each piece of data so it's clear what the values mean. Thanks to these names, structs are more flexible than tuples: you don't have to rely on the order of the data to specify or access the values of an instance.
 
-存储用户账号信息的结构体：
+A struct that stores information about a user account:
 
 ```rs
 struct User {
@@ -1310,11 +1355,11 @@ struct User {
 }
 ```
 
-使用: 通过为每个字段指定具体值来创建这个结构体的实例。  
+Usage: create an instance of the struct by giving each field a concrete value.  
 
-创建一个实例需要以结构体的名字开头，接着在大括号中使用 key: value 键-值对的形式提供字段.  
+An instance starts with the name of the struct, followed by curly brackets containing key: value pairs for the fields.  
 
-声明一个特定的用户：
+Declaring a particular user:
 
 ```rs
 struct User {
@@ -1334,8 +1379,8 @@ fn main() {
 }
 ```
 
-为了从结构体中获取某个特定的值，可以使用点号。想要用户的邮箱地址，可以用 user1.email。  
-要更改结构体中的值，如果结构体的实例是可变的，可以使用点号并为对应的字段赋值。  
+To get a specific value from a struct, use dot notation. For the user's email address, use user1.email.  
+If the instance is mutable, change a value by using dot notation and assigning to the field.  
 
 ```rs
 fn main() {
@@ -1350,7 +1395,7 @@ fn main() {
 }
 ```
 
-build_user 函数，它返回一个带有给定的 email 和用户名的 User 结构体实例。
+The build_user function returns a User instance with the given email and username.
 
 ```rs
 fn build_user(email: String, username: String) -> User {
@@ -1362,7 +1407,7 @@ fn build_user(email: String, username: String) -> User {
   }
 }
 
-// 简洁写法
+// shorthand
 fn build_user(email: String, username: String) -> User {
   User {
     email,
@@ -1373,7 +1418,7 @@ fn build_user(email: String, username: String) -> User {
 }
 ```
 
-.. 语法指定了剩余未显式设置值的字段应有与给定实例对应字段相同的值。
+The .. syntax specifies that the remaining fields not explicitly set should have the same values as the fields in the given instance.
 
 ```rs
 let user1 = User {
@@ -1390,16 +1435,16 @@ let user2 = User {
   sign_in_count: user1.sign_in_count,
 };
 
-// ..语法
+// .. syntax
 let user2 = User {
   email: String::from("another@example.com"),
   ..user1
 };
 ```
 
-> 定义元组结构体
+> Defining tuple structs
 
-以 struct 关键字和结构体名开头并后跟元组中的类型.  
+Start with the struct keyword and the struct name, followed by the types in the tuple.  
 
 ```rs
 struct Color(i32, i32, i32);
@@ -1411,9 +1456,9 @@ fn main() {
 }
 ```
 
-> 没有任何字段的类单元结构体
+> Unit-like structs without any fields
 
-被称为 类单元结构体（unit-like structs）因为它们类似于 ()，即“元组类型”一节中提到的 unit 类型。
+These are called unit-like structs because they behave similarly to (), the unit type mentioned in the "tuple type" section.
 
 ```rs
 struct AlwaysEqual;
@@ -1423,11 +1468,11 @@ fn main() {
 }
 ```
 
-### 8.1. 方法
+### 8.1. Methods
 
-方法（method）与函数类似：使用 fn 关键字和名称声明，可以拥有参数和返回值，同时包含在某处调用该方法时会执行的代码。不过方法与函数是不同的，因为它们在结构体的上下文中被定义（或者是枚举或 trait 对象的上下文），并且第一个参数总是 self，它代表调用该方法的结构体实例。
+Methods are similar to functions: they are declared with the fn keyword and a name, can have parameters and a return value, and contain code that runs when the method is called. Unlike functions, methods are defined within the context of a struct (or an enum or a trait object), and their first parameter is always self, which represents the struct instance the method is called on.
 
-在 Rectangle 结构体上定义 area 方法
+Defining an area method on the Rectangle struct
 
 ```rs
 #[derive(Debug)]
@@ -1465,11 +1510,11 @@ fn main() {
 }
 ```
 
-在 area 的签名中，使用 &self 来替代 rectangle: &Rectangle，&self 实际上是 self: &Self 的缩写。  
+In the signature of area, &self is used instead of rectangle: &Rectangle; &self is actually short for self: &Self.  
 
-self 前面使用 & 来表示这个方法借用了 Self 实例.  
+The & in front of self indicates that the method borrows the Self instance.  
 
-## 9. 枚举
+## 9. Enums
 
 ```rs
 fn main() {
@@ -1495,7 +1540,7 @@ fn main() {
 }
 ```
 
-一个 Message 枚举，其每个成员都存储了不同数量和类型的值
+A Message enum whose variants each store different amounts and types of values
 
 ```rs
 enum Message {
@@ -1506,14 +1551,14 @@ enum Message {
 }
 ```
 
-- Quit 没有关联任何数据。
-- Move 类似结构体包含命名字段。
-- Write 包含单独一个 String。
-- ChangeColor 包含三个 i32。
+- Quit has no data associated with it at all.
+- Move has named fields, like a struct.
+- Write includes a single String.
+- ChangeColor includes three i32 values.
 
-## 10. match 控制流
+## 10. The match control flow construct
 
-将一个值与一系列的模式相比较，并根据相匹配的模式执行相应代码。模式可由字面值、变量、通配符和许多其他内容构成.  
+Compares a value against a series of patterns and runs the code of the pattern that matches. Patterns can be made up of literal values, variable names, wildcards and many other things.  
 
 ```rs
 enum Coin {
@@ -1536,9 +1581,9 @@ fn value_in_cents(coin: Coin) -> u8 {
 }
 ```
 
-## 11. if let 控制流
+## 11. Control flow with if let
 
-if let 语法获取通过等号分隔的一个模式和一个表达式。它的工作方式与 match 相同，这里的表达式对应 match 而模式则对应第一个分支
+The if let syntax takes a pattern and an expression separated by an equal sign. It works the same way as a match, where the expression is given to the match and the pattern is its first arm
 
 ```rs
 let config_max = Some(3u8);
@@ -1547,29 +1592,29 @@ match config_max {
   _ => (),
 }
 
-// 功能同上
+// same as above
 let config_max = Some(3u8);
 if let Some(max) = config_max {
    println!("The maximum is configured to be {}", max);
 }
 ```
 
-## 12. 泛型和特征
+## 12. Generics and traits
 
-泛型参数的名称你可以任意起，但是出于惯例，我们都用 T ( T 是 type 的首字母)来作为首选。  
+You can name a generic parameter anything, but by convention T (the first letter of "type") is the usual first choice.  
 
-使用泛型参数，必需在使用前对其进行声明：
+A generic parameter must be declared before it is used:
 
 ```rust
 fn largest<T>(list: &[T]) -> T {
 ```
 
-### 12.1. 结构体中使用泛型
+### 12.1. Generics in structs
 
-结构体中的字段类型也可以用泛型来定义, 有两点需要特别的注意：  
+Field types in a struct can also be generic. Two things to note:  
 
-- 提前声明，跟泛型函数定义类似，首先我们在使用泛型参数之前必需要进行声明 Point<T>，接着就可以在结构体的字段类型中使用 T 来替代具体的类型
-- x 和 y 是相同的类型
+- Declare first: as with generic functions, the generic parameter must be declared before use, as Point<T>; then T can be used in place of concrete types in the struct's fields
+- x and y have the same type
 
 ```rust
 struct Point<T> {
@@ -1583,7 +1628,7 @@ fn main() {
 }
 ```
 
-### 12.2. 枚举中使用泛型
+### 12.2. Generics in enums
 
 
 
@@ -1594,9 +1639,9 @@ enum Option<T> {
 }
 ```
 
-### 12.3. 方法中使用泛型
+### 12.3. Generics in methods
 
-使用泛型参数前，依然需要提前声明：impl<T>，只有提前声明了，我们才能在Point<T>中使用它，这样 Rust 就知道 Point 的尖括号中的类型是泛型而不是具体类型。需要注意的是，这里的 Point<T> 不再是泛型声明，而是一个完整的结构体类型，因为我们定义的结构体就是 Point<T> 而不再是 Point。
+The generic parameter still has to be declared first: impl<T>. Only then can we use it in Point<T>, so that Rust knows the type in Point's angle brackets is generic rather than concrete. Note that Point<T> here is no longer a generic declaration but a complete struct type, because the struct we defined is Point<T>, not Point.
 
 ```rust
 struct Point<T> {
@@ -1617,12 +1662,12 @@ fn main() {
 }
 ```
 
-### 12.4. const 泛型（Rust 1.51 版本引入的重要特性）
+### 12.4. const generics (an important feature introduced in Rust 1.51)
 
-定义了一个类型为 [T; N] 的数组，其中 T 是一个基于类型的泛型参数， N 这个泛型参数，它是一个基于值的泛型参数！因为它用来替代的是数组的长度。  
+This defines an array of type [T; N], where T is a type-based generic parameter and N is a value-based generic parameter, because it stands for the length of the array.  
 
-N 就是 const 泛型，定义的语法是 const N: usize，表示 const 泛型 N ，它基于的值类型是 usize。  
-对 T 加一个限制 std::fmt::Debug，该限制表明 T 可以用在 println!("{:?}", arr) 中，因为 {:?} 形式的格式化输出需要 arr 实现该特征。  
+N is a const generic, declared with the syntax const N: usize: a const generic N whose value is of type usize.  
+T is bounded by std::fmt::Debug, which means T can be used in println!("{:?}", arr), because the {:?} formatting requires arr to implement that trait.  
 
 ```rust
 fn display_array<T: std::fmt::Debug, const N: usize>(arr: [T; N]) {
@@ -1637,19 +1682,19 @@ fn main() {
 }
 ```
 
-#### 12.4.1 const 泛型表达式
+#### 12.4.1 const generic expressions
 
-假设我们某段代码需要在内存很小的平台上工作，因此需要限制函数参数占用的内存大小，此时就可以使用 const 泛型表达式来实现：
+Suppose some code has to run on a platform with very little memory, so the memory taken by function arguments must be limited. const generic expressions can express that:
 
 ```rust
-// 目前只能在nightly版本下使用
+// currently only available on nightly
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
 
 fn something<T>(val: T)
 where
     Assert<{ core::mem::size_of::<T>() < 768 }>: IsTrue,
-    //       ^-----------------------------^ 这里是一个 const 表达式，换成其它的 const 表达式也可以
+    //       ^-----------------------------^ this is a const expression; any other const expression works too
 {
     //
 }
@@ -1657,7 +1702,7 @@ where
 fn main() {
     something([0u8; 0]); // ok
     something([0u8; 512]); // ok
-    something([0u8; 1024]); // 编译错误，数组长度是1024字节，超过了768字节的参数长度限制
+    something([0u8; 1024]); // compile error: the array is 1024 bytes, over the 768-byte argument limit
 }
 
 // ---
@@ -1675,22 +1720,22 @@ impl IsTrue for Assert<true> {
 }
 ```
 
-### 12.5. 泛型的性能
+### 12.5. Performance of generics
 
-Rust 通过在编译时进行泛型代码的 单态化(monomorphization)来保证效率。单态化是一个通过填充编译时使用的具体类型，将通用代码转换为特定代码的过程。  
+Rust keeps generic code efficient by monomorphizing it at compile time. Monomorphization turns generic code into specific code by filling in the concrete types used when compiling.  
 
-编译器所做的工作正好与我们创建泛型函数的步骤相反，编译器寻找所有泛型代码被调用的位置并针对具体类型生成代码。  
+The compiler does the opposite of the steps we took to create the generic function: it looks at every place where generic code is called and generates code for the concrete types.  
 
-一个使用标准库中 Option 枚举的例子：
+An example using the standard library's Option enum:
 
 ```rust
 let integer = Some(5);
 let float = Some(5.0);
 ```
 
-当 Rust 编译这些代码的时候，它会进行单态化。编译器会读取传递给 Option<T> 的值并发现有两种 Option<T>：一种对应 i32 另一种对应 f64。为此，它会将泛型定义 Option<T> 展开为 Option_i32 和 Option_f64，接着将泛型定义替换为这两个具体的定义。
+When Rust compiles this code, it monomorphizes it. The compiler reads the values passed to Option<T> and sees two kinds of Option<T>: one for i32 and one for f64. So it expands the generic definition Option<T> into Option_i32 and Option_f64, replacing the generic definition with these two specific ones.
 
-编译器生成的单态化版本的代码看起来像这样：
+The monomorphized code generated by the compiler looks like this:
 
 ```rust
 enum Option_i32 {
@@ -1709,9 +1754,9 @@ fn main() {
 }
 ```
 
-### 12.6. 特征 Trait
+### 12.6. Traits
 
-如果不同的类型具有相同的行为，那么我们就可以定义一个特征，然后为这些类型实现该特征。定义特征是把一些方法组合在一起，目的是定义一个实现某些目标所必需的行为的集合。  
+If different types share the same behavior, we can define a trait and implement it for those types. A trait groups methods together to define a set of behaviors needed to achieve some purpose.  
 
 ```rust
 pub trait Summary {
@@ -1719,25 +1764,25 @@ pub trait Summary {
 }
 ```
 
-这里使用 trait 关键字来声明一个特征，Summary 是特征名。在大括号中定义了该特征的所有方法，在这个例子中是： fn summarize(&self) -> String。
+The trait keyword declares a trait, here named Summary. The curly brackets hold all methods of the trait, in this example: fn summarize(&self) -> String.
 
-#### 12.6.1. 为类型实现特征
+#### 12.6.1. Implementing a trait for a type
 
-为 Post 和 Weibo 实现 Summary 特征：
+Implementing the Summary trait for Post and Weibo:
 
 ```rust
 pub trait Summary {
     fn summarize(&self) -> String;
 }
 pub struct Post {
-    pub title: String, // 标题
-    pub author: String, // 作者
-    pub content: String, // 内容
+    pub title: String, // title
+    pub author: String, // author
+    pub content: String, // content
 }
 
 impl Summary for Post {
     fn summarize(&self) -> String {
-        format!("文章{}, 作者是{}", self.title, self.author)
+        format!("Article {}, author: {}", self.title, self.author)
     }
 }
 
@@ -1748,28 +1793,28 @@ pub struct Weibo {
 
 impl Summary for Weibo {
     fn summarize(&self) -> String {
-        format!("{}发表了微博{}", self.username, self.content)
+        format!("{} posted a weibo: {}", self.username, self.content)
     }
 }
 
 fn main() {
-    let post = Post{title: "Rust语言简介".to_string(),author: "Sunface".to_string(), content: "Rust棒极了!".to_string()};
-    let weibo = Weibo{username: "sunface".to_string(),content: "好像微博没Tweet好用".to_string()};
+    let post = Post{title: "An introduction to Rust".to_string(),author: "Sunface".to_string(), content: "Rust is great!".to_string()};
+    let weibo = Weibo{username: "sunface".to_string(),content: "Weibo seems less handy than Tweet".to_string()};
 
     println!("{}",post.summarize());
     println!("{}",weibo.summarize());
 }
 ```
 
-#### 12.6.2. 特征定义与实现的位置(孤儿规则)
+#### 12.6.2. Where traits are defined and implemented (the orphan rule)
 
-关于特征实现与定义的位置，有一条非常重要的原则：如果你想要为类型 A 实现特征 T，那么 A 或者 T 至少有一个是在当前作用域中定义的！ 例如我们可以为上面的 Post 类型实现标准库中的 Display 特征，这是因为 Post 类型定义在当前的作用域中。同时，我们也可以在当前包中为 String 类型实现 Summary 特征，因为 Summary 定义在当前作用域中。
+There is one very important rule about where traits are implemented and defined: to implement trait T for type A, at least one of A or T must be defined in the current scope! For example, we can implement the standard library's Display trait for the Post type above, because Post is defined in the current scope. We can also implement Summary for String in the current crate, because Summary is defined in the current scope.
 
-但是你无法在当前作用域中，为 String 类型实现 Display 特征，因为它们俩都定义在标准库中，其定义所在的位置都不在当前作用域，该规则被称为孤儿规则，可以确保其它人编写的代码不会破坏你的代码。
+But you cannot implement Display for String in the current scope, because both are defined in the standard library, outside the current scope. This is called the orphan rule; it ensures that other people's code cannot break your code.
 
-#### 12.6.3. 默认实现
+#### 12.6.3. Default implementations
 
-可以在特征中定义具有默认实现的方法，这样其它类型无需再实现该方法，或者也可以选择重载该方法：
+A trait can define methods with a default implementation, so other types don't need to implement them, or can choose to override them:
 
 ```rust
 pub trait Summary {
@@ -1779,28 +1824,28 @@ pub trait Summary {
 }
 ```
 
-上面为 Summary 定义了一个默认实现，下面我们编写段代码来测试下：
+The code above defines a default implementation for Summary; let's write some code to test it:
 
 ```rust
 impl Summary for Post {}
 
 impl Summary for Weibo {
     fn summarize(&self) -> String {
-        format!("{}发表了微博{}", self.username, self.content)
+        format!("{} posted a weibo: {}", self.username, self.content)
     }
 }
 ```
 
-可以看到，Post 选择了默认实现，而 Weibo 重载了该方法，调用和输出如下：
+Post uses the default implementation while Weibo overrides the method. The calls and output are:
 
 ```rust
     println!("{}",post.summarize());
     println!("{}",weibo.summarize());
 (Read more...)
-sunface发表了微博好像微博没Tweet好用
+sunface posted a weibo: Weibo seems less handy than Tweet
 ```
 
-#### 12.6.4. 使用特征作为函数参数
+#### 12.6.4. Traits as function parameters
 
 ```rust
 pub fn notify(item: &impl Summary) {
@@ -1808,13 +1853,13 @@ pub fn notify(item: &impl Summary) {
 }
 ```
 
-impl Summary，的意思是 实现了Summary特征 的 item 参数。
+impl Summary means: an item parameter that implements the Summary trait.
 
-你可以使用任何实现了 Summary 特征的类型作为该函数的参数，同时在函数体内，还可以调用该特征的方法，例如 summarize 方法。具体的说，可以传递 Post 或 Weibo 的实例来作为参数，而其它类如 String 或者 i32 的类型则不能用做该函数的参数，因为它们没有实现 Summary 特征。
+Any type that implements Summary can be passed to this function, and the function body can call the trait's methods, such as summarize. Concretely, you can pass an instance of Post or Weibo, but other types such as String or i32 cannot be used, because they don't implement Summary.
 
-#### 12.6.5. 特征约束(trait bound)
+#### 12.6.5. Trait bounds
 
-impl Trait 这种语法只是一个语法糖：
+The impl Trait syntax is just syntactic sugar:
 
 ```rust
 pub fn notify<T: Summary>(item: &T) {
@@ -1822,47 +1867,47 @@ pub fn notify<T: Summary>(item: &T) {
 }
 ```
 
-真正的完整书写形式如上所述，形如 T: Summary 被称为特征约束。
+The full form is shown above; T: Summary is called a trait bound.
 
-在简单的场景下 impl Trait 这种语法糖就足够使用，但是对于复杂的场景，特征约束可以让我们拥有更大的灵活性和语法表现能力，例如一个函数接受两个 impl Summary 的参数：
+In simple cases the impl Trait sugar is enough, but in complex cases trait bounds give more flexibility and expressiveness. For example, a function taking two impl Summary parameters:
 
 ```rust
 pub fn notify(item1: &impl Summary, item2: &impl Summary) {}
 ```
 
-如果函数两个参数是不同的类型，那么上面的方法很好，只要这两个类型都实现了 Summary 特征即可。但是如果我们想要强制函数的两个参数是同一类型呢？上面的语法就无法做到这种限制，此时我们只能使特征约束来实现：
+If the two parameters may have different types, the form above is fine, as long as both types implement Summary. But what if we want to force both parameters to have the same type? The syntax above can't express that; only a trait bound can:
 
 ```rust
 pub fn notify<T: Summary>(item1: &T, item2: &T) {}
 ```
 
-泛型类型 T 说明了 item1 和 item2 必须拥有同样的类型，同时 T: Summary 说明了 T 必须实现 Summary 特征。
+The generic type T says item1 and item2 must have the same type, and T: Summary says T must implement the Summary trait.
 
-#### 12.6.6. 多重约束
+#### 12.6.6. Multiple bounds
 
-除了单个约束条件，我们还可以指定多个约束条件，例如除了让参数实现 Summary 特征外，还可以让参数实现 Display 特征以控制它的格式化输出：
+Besides a single bound, we can specify several. For example, besides Summary, the parameter can also be required to implement Display, to control its formatted output:
 
 ```rust
 pub fn notify(item: &(impl Summary + Display)) {}
 ```
 
-除了上述的语法糖形式，还能使用特征约束的形式：
+Besides the sugared form above, the trait-bound form works too:
 
 ```rust
 pub fn notify<T: Summary + Display>(item: &T) {}
 ```
 
-通过这两个特征，就可以使用 item.summarize 方法，以及通过 println!("{}", item) 来格式化输出 item。
+With these two traits, we can call item.summarize and format item with println!("{}", item).
 
-#### 12.6.7. Where 约束
+#### 12.6.7. where clauses
 
-当特征约束变得很多时，函数的签名将变得很复杂：
+With many trait bounds, the function signature becomes hard to read:
 
 ```rust
 fn some_function<T: Display + Clone, U: Clone + Debug>(t: &T, u: &U) -> i32 {}
 ```
 
-通过 where对其做一些形式上的改进
+A where clause improves its shape
 
 ```rust
 fn some_function<T, U>(t: &T, u: &U) -> i32
@@ -1871,9 +1916,9 @@ fn some_function<T, U>(t: &T, u: &U) -> i32
 {}
 ```
 
-#### 12.6.8. 使用特征约束有条件地实现方法或特征
+#### 12.6.8. Conditionally implementing methods or traits with trait bounds
 
-特征约束，可以让我们在指定类型 + 指定特征的条件下去实现方法，例如：
+Trait bounds let us implement methods only for a given type combined with given traits, for example:
 
 ```rust
 use std::fmt::Display;
@@ -1903,10 +1948,10 @@ impl<T: Display + PartialOrd> Pair<T> {
 }
 ```
 
-cmp_display 方法，并不是所有的 Pair<T> 结构体对象都可以拥有，只有 T 同时实现了 Display + PartialOrd 的 Pair<T> 才可以拥有此方法。  
-该函数可读性会更好，因为泛型参数、参数、返回值都在一起，可以快速的阅读，同时每个泛型参数的特征也在新的代码行中通过特征约束进行了约束。  
+Not every Pair<T> has the cmp_display method: only a Pair<T> whose T implements both Display + PartialOrd does.  
+This function is easier to read: the generic parameters, parameters and return value are together and quick to scan, while each generic parameter's traits are bounded on their own lines.  
 
-也可以有条件地实现特征, 例如，标准库为任何实现了 Display 特征的类型实现了 ToString 特征：
+Traits can also be implemented conditionally. For example, the standard library implements the ToString trait for any type that implements Display:
 
 ```rust
 impl<T: Display> ToString for T {
@@ -1914,39 +1959,39 @@ impl<T: Display> ToString for T {
 }
 ```
 
-我们可以对任何实现了 Display 特征的类型调用由 ToString 定义的 to_string 方法。例如，可以将整型转换为对应的 String 值，因为整型实现了 Display：
+We can call the to_string method defined by ToString on any type that implements Display. For example, an integer can be turned into the corresponding String, because integers implement Display:
 
 ```rust
 let s = 3.to_string();
 ```
 
-#### 12.6.9. 函数返回中的 impl Trait
+#### 12.6.9. impl Trait in return position
 
-通过 impl Trait 来说明一个函数返回了一个类型，该类型实现了某个特征：
+impl Trait says that a function returns some type that implements a trait:
 
 ```rust
 fn returns_summarizable() -> impl Summary {
     Weibo {
         username: String::from("sunface"),
-        content: String::from("m1 max太厉害了，电脑再也不会卡"),
+        content: String::from("The M1 Max is amazing, the computer never lags anymore"),
     }
 }
 ```
 
-impl Trait 形式的返回值，在一种场景下非常非常有用，那就是返回的真实类型非常复杂，你不知道该怎么声明时(毕竟 Rust 要求你必须标出所有的类型)，此时就可以用 impl Trait 的方式简单返回。  
+Returning impl Trait is extremely useful in one situation: when the real return type is very complex and you don't know how to write it (Rust requires every type to be spelled out), you can simply return impl Trait.  
 
-这种返回值方式有一个很大的限制：只能有一个具体的类型.  
+This way of returning has one big limitation: there can only be one concrete type.  
 
-#### 12.6.10. 为自定义类型实现 + 操作
+#### 12.6.10. Implementing + for a custom type
 
 
 
 ```rust
 use std::ops::Add;
 
-// 为Point结构体派生Debug特征，用于格式化输出
+// Derive Debug for the Point struct, for formatted output
 #[derive(Debug)]
-struct Point<T: Add<T, Output = T>> { //限制类型T必须实现了Add特征，否则无法进行+操作。
+struct Point<T: Add<T, Output = T>> { // T must implement the Add trait, otherwise + is not possible.
     x: T,
     y: T,
 }
@@ -1977,19 +2022,19 @@ fn main() {
 }
 ```
 
-### 12.7. 特征对象
+### 12.7. Trait objects
 
 
 
 
 
-## 13. 动态数组 Vector
+## 13. Vectors
 
-动态数组只能存储相同类型的元素，如果你想存储不同类型的元素，可以使用之前讲过的枚举类型或者特征对象。
+A vector can only store elements of the same type; to store elements of different types, use an enum or trait objects, as covered earlier.
 
-### 13.1. 创建动态数组
+### 13.1. Creating a vector
 
-v 被显式地声明了类型 Vec<i32>
+v is explicitly declared as Vec<i32>
 
 > Vec::new
 
@@ -2002,55 +2047,55 @@ let mut v = Vec::new();
 v.push(1);
 ```
 
-此时，v 就无需手动声明类型，因为编译器通过 v.push(1)，推测出 v 中的元素类型是 i32，因此推导出 v 的类型是 Vec<i32>。
+Here v needs no type annotation, because from v.push(1) the compiler infers that its elements are i32, and therefore that v is Vec<i32>.
 
-如果预先知道要存储的元素个数，可以使用 Vec::with_capacity(capacity) 创建动态数组，这样可以避免因为插入大量新数据导致频繁的内存分配和拷贝，提升性能.
+If you know in advance how many elements will be stored, create the vector with Vec::with_capacity(capacity). This avoids frequent allocations and copies when inserting lots of data, which improves performance.
 
 > vec![]
 
-使用宏 vec! 来创建数组，与 Vec::new 有所不同，前者能在创建同时给予初始化值：
+The vec! macro creates a vector; unlike Vec::new, it can give initial values at creation:
 
 ```rust
 let v = vec![1, 2, 3];
 ```
 
-此处的 v 也无需标注类型，编译器只需检查它内部的元素即可自动推导出 v 的类型是 Vec<i32> （Rust 中，整数默认类型是 i32，在数值类型中有详细介绍）。
+Again v needs no annotation: the compiler checks the elements and infers that v is Vec<i32> (integers default to i32 in Rust, as described under numeric types).
 
-### 13.2. 更新 Vector
+### 13.2. Updating a vector
 
-向数组尾部添加元素，可以使用 push 方法：
+To add an element at the end, use the push method:
 
 ```rust
 let mut v = Vec::new();
 v.push(1);
 ```
 
-与其它类型一样，必须将 v 声明为 mut 后，才能进行修改。
+As with any other type, v must be declared mut before it can be modified.
 
-### 13.3. 从 Vector 中读取元素
+### 13.3. Reading elements of a vector
 
-读取指定位置的元素有两种方式可选：
+There are two ways to read the element at a given position:
 
-- 通过下标索引访问。
-- 使用 get 方法。
+- Indexing.
+- The get method.
 
 ```rust
 let v = vec![1, 2, 3, 4, 5];
 
 let third: &i32 = &v[2];
-println!("第三个元素是 {}", third);
+println!("The third element is {}", third);
 
 match v.get(2) {
-    Some(third) => println!("第三个元素是 {third}"),
-    None => println!("去你的第三个元素，根本没有！"),
+    Some(third) => println!("The third element is {third}"),
+    None => println!("There is no third element at all!"),
 }
 ```
 
-> 集合类型的索引下标都是从 0 开始，&v[2] 表示借用 v 中的第三个元素，最终会获得该元素的引用。而 v.get(2) 也是访问第三个元素，但是有所不同的是，它返回了 Option<&T>，因此还需要额外的 match 来匹配解构出具体的值。
+> Indices of collection types start at 0: &v[2] borrows the third element of v and yields a reference to it. v.get(2) also accesses the third element, but returns Option<&T>, so an extra match is needed to get at the value.
 
-> 下标索引与 .get 的区别.
+> The difference between indexing and .get.
 
-涉及到数组越界的问题
+It matters when accessing past the end
 
 ```rust
 let v = vec![1, 2, 3, 4, 5];
@@ -2059,11 +2104,11 @@ let does_not_exist = &v[100];
 let does_not_exist = v.get(100);
 ```
 
-运行以上代码，&v[100] 的访问方式会导致程序无情报错退出，因为发生了数组越界访问。 但是 v.get 就不会，它在内部做了处理，有值的时候返回 Some(T)，无值的时候返回 None，因此 v.get 的使用方式非常安全。
+Running the code above, the &v[100] access makes the program panic and exit, because it reads past the end of the vector. v.get does not: it handles this internally, returning Some(T) when there is a value and None when there isn't, so v.get is very safe to use.
 
-### 13.4. 同时借用多个数组元素
+### 13.4. Borrowing several vector elements at once
 
-first = &v[0] 进行了不可变借用，v.push 进行了可变借用，如果 first 在 v.push 之后不再使用，那么该段代码可以成功编译，原因是引用的作用域。
+first = &v[0] is an immutable borrow and v.push is a mutable borrow. If first is not used after v.push, this code compiles, because of how the scope of a reference works.
 
 ```rust
 let mut v = vec![1, 2, 3, 4, 5];
@@ -2073,14 +2118,14 @@ let first = &v[0];
 v.push(6);
 
 println!("The first element is: {first}");
-//  ----- immutable borrow later used here // 不可变借用在这里被使用
+//  ----- immutable borrow later used here
 ```
 
-原因在于：数组的大小是可变的，当旧数组的大小不够用时，Rust 会重新分配一块更大的内存空间，然后把旧数组拷贝过来。这种情况下，之前的引用显然会指向一块无效的内存。
+The reason: a vector's size can change. When the old buffer is too small, Rust allocates a bigger block of memory and copies the old vector into it. In that case the earlier reference would clearly point to invalid memory.
 
-### 13.5. 迭代遍历 Vector 中的元素
+### 13.5. Iterating over the elements of a vector
 
-使用迭代的方式去遍历数组，这种方式比用下标的方式去遍历数组更安全也更高效（每次下标访问都会触发数组边界检查）：
+Iterating over a vector is safer and more efficient than using indices (every index access triggers a bounds check):
 
 ```rust
 let v = vec![1, 2, 3];
@@ -2089,7 +2134,7 @@ for i in &v {
 }
 ```
 
-也可以在迭代过程中，修改 Vector 中的元素：
+Elements of the vector can also be modified while iterating:
 
 ```rust
 let mut v = vec![1, 2, 3];
@@ -2098,11 +2143,11 @@ for i in &mut v {
 }
 ```
 
-### 13.6. 存储不同类型的元素
+### 13.6. Storing elements of different types
 
-通过使用枚举类型和特征对象来实现不同类型元素的存储。
+Enums and trait objects make it possible to store elements of different types.
 
-> 枚举类型
+> Enums
 
 ```rust
 #[derive(Debug)]
@@ -2126,7 +2171,7 @@ fn show_addr(ip: IpAddr) {
 }
 ```
 
-> 特征对象
+> Trait objects
 
 ```rust
 trait IpAddr {
@@ -2158,49 +2203,49 @@ fn main() {
 }
 ```
 
-在实际使用场景中，特征对象数组要比枚举数组常见很多，主要原因在于特征对象非常灵活，而编译器对枚举的限制较多，且无法动态增加类型。
+In practice, vectors of trait objects are much more common than vectors of enums, mainly because trait objects are very flexible, while the compiler restricts enums more and doesn't allow adding types dynamically.
 
-### 13.7. Vector 常用方法
+### 13.7. Common vector methods
 
-> 初始化 vec 的方式
+> Ways to initialize a vec
 
 ```rust
 fn main() {
-    let v = vec![0; 3];   // 默认值为 0，初始长度为 3
+    let v = vec![0; 3];   // default value 0, initial length 3
     let v_from = Vec::from([0, 0, 0]);
     assert_eq!(v, v_from);
 }
 ```
 
-动态数组意味着我们增加元素时，如果容量不足就会导致 vector 扩容（目前的策略是重新申请一块 2 倍大小的内存，再将所有元素拷贝到新的内存位置，同时更新指针数据），显然，当频繁扩容或者当元素数量较多且需要扩容时，大量的内存拷贝会降低程序的性能。
+A growable array means that when we add elements and capacity runs out, the vector grows (the current strategy allocates a block twice as large, copies all elements to it and updates the pointer). Clearly, frequent growth, or growth with many elements, means lots of memory copying that hurts performance.
 
-可以考虑在初始化时就指定一个实际的预估容量，尽量减少可能的内存拷贝：
+Consider giving a realistic estimated capacity at initialization to minimize possible copying:
 
 ```rust
 fn main() {
     let mut v = Vec::with_capacity(10);
-    v.extend([1, 2, 3]);    // 附加数据到 v
-    println!("Vector 长度是: {}, 容量是: {}", v.len(), v.capacity());
+    v.extend([1, 2, 3]);    // append data to v
+    println!("Vector length: {}, capacity: {}", v.len(), v.capacity());
 
-    v.reserve(100);        // 调整 v 的容量，至少要有 100 的容量
-    println!("Vector（reserve） 长度是: {}, 容量是: {}", v.len(), v.capacity());
+    v.reserve(100);        // adjust v's capacity to at least 100
+    println!("Vector (reserve) length: {}, capacity: {}", v.len(), v.capacity());
 
-    v.shrink_to_fit();     // 释放剩余的容量，一般情况下，不会主动去释放容量
-    println!("Vector（shrink_to_fit） 长度是: {}, 容量是: {}", v.len(), v.capacity());
+    v.shrink_to_fit();     // release unused capacity; normally capacity is not released proactively
+    println!("Vector (shrink_to_fit) length: {}, capacity: {}", v.len(), v.capacity());
 }
 ```
 
-### 13.8. Vector 的排序
+### 13.8. Sorting vectors
 
-两种排序算法，分别为稳定的排序 sort 和 sort_by，以及非稳定排序 sort_unstable 和 sort_unstable_by。
+There are two kinds of sort: the stable sort and sort_by, and the unstable sort_unstable and sort_unstable_by.
 
- 非稳定 并不是指排序算法本身不稳定，而是指在排序过程中对相等元素的处理方式。在 稳定 排序算法里，对相等的元素，不会对其进行重新排序。而在 不稳定 的算法里则不保证这点。
+ Unstable doesn't mean the sorting algorithm itself is unreliable; it refers to how equal elements are treated. A stable sort never reorders equal elements; an unstable one doesn't guarantee that.
 
-总体而言，非稳定 排序的算法的速度会优于 稳定 排序算法，同时，稳定 排序还会额外分配原数组一半的空间。
+Overall, unstable sorting is faster than stable sorting, and a stable sort also allocates extra memory of half the size of the original array.
 
-> 整数数组的排序
+> Sorting an integer array
 
-以下是对整数列进行排序的例子。
+Here is an example of sorting a list of integers.
 
 ```rust
 fn main() {
@@ -2210,11 +2255,11 @@ fn main() {
 }
 ```
 
-> 浮点数数组的排序
+> Sorting an array of floats
 
-原来，在浮点数当中，存在一个 NAN 的值，这个值无法与其他的浮点数进行对比，因此，浮点数类型并没有实现全数值可比较 Ord 的特性，而是实现了部分可比较的特性 PartialOrd。
+It turns out that floating-point numbers include a NAN value that can't be compared with other floats, so float types don't implement total ordering (Ord), only partial ordering (PartialOrd).
 
-如此，如果我们确定在我们的浮点数数组当中，不包含 NAN 值，那么我们可以使用 partial_cmp 来作为大小判断的依据。
+So if we are sure our float array contains no NAN values, we can use partial_cmp to compare.
 
 ```rust
 fn main() {
@@ -2224,7 +2269,7 @@ fn main() {
 }
 ```
 
-> 对结构体数组进行排序
+> Sorting an array of structs
 
 ```rust
 #[derive(Debug)]
@@ -2245,7 +2290,7 @@ fn main() {
         Person::new("Al".to_string(), 60),
         Person::new("John".to_string(), 1),
     ];
-    // 定义一个按照年龄倒序排序的对比函数
+    // define a comparison that sorts by age in descending order
     people.sort_unstable_by(|a, b| b.age.cmp(&a.age));
 
     println!("{:?}", people);
@@ -2254,46 +2299,46 @@ fn main() {
 
 ## 14. HashMap
 
-HashMap 也是 Rust 标准库中提供的集合类型，但是又与动态数组不同，HashMap 中存储的是一一映射的 KV 键值对，并提供了平均复杂度为 O(1) 的查询方法，当我们希望通过一个 Key 去查询值时，该类型非常有用。
+HashMap is another collection type in Rust's standard library. Unlike a vector, a HashMap stores one-to-one key-value (KV) pairs and offers lookups with an average complexity of O(1), which is very useful when you want to find a value by its key.
 
-Rust 中哈希类型（哈希映射）为 HashMap<K,V>，在其它语言中，也有类似的数据结构，例如 hash map，map，object，hash table，字典 等等。
+Rust's hash type (hash map) is HashMap<K,V>. Other languages have similar data structures: hash map, map, object, hash table, dictionary, and so on.
 
-### 14.1. 创建 HashMap
+### 14.1. Creating a HashMap
 
-跟创建动态数组 Vec 的方法类似，可以使用 new 方法来创建 HashMap，然后通过 insert 方法插入键值对。
+As with creating a Vec, a HashMap can be created with new, and key-value pairs inserted with insert.
 
-> 使用 new 方法创建
+> Creating one with new
 
 ```rust
 use std::collections::HashMap;
 
-// 创建一个HashMap，用于存储宝石种类和对应的数量
+// Create a HashMap storing kinds of gems and their counts
 let mut my_gems = HashMap::new();
 
-// 将宝石类型和对应的数量写入表中
-my_gems.insert("红宝石", 1);
-my_gems.insert("蓝宝石", 2);
-my_gems.insert("河边捡的误以为是宝石的破石头", 18);
+// Write the gem kinds and their counts into the map
+my_gems.insert("Ruby", 1);
+my_gems.insert("Sapphire", 2);
+my_gems.insert("Worthless rock from the riverbank mistaken for a gem", 18);
 ```
 
-使用 HashMap 需要手动通过 use ... 从标准库中引入到我们当前的作用域中来，之前使用另外两个集合类型 String 和 Vec 时，我们是否有手动引用过？答案是 No，因为 HashMap 并没有包含在 Rust 的 prelude 中（Rust 为了简化用户使用，提前将最常用的类型自动引入到作用域中）。
+HashMap has to be brought into scope from the standard library with use .... Did we have to do that for the other two collection types, String and Vec? No, because HashMap is not in Rust's prelude (the most common types that Rust brings into scope automatically, for convenience).
 
-所有的集合类型都是动态的，意味着它们没有固定的内存大小，因此它们底层的数据都存储在内存堆上，然后通过一个存储在栈中的引用类型来访问。同时，跟其它集合类型一致，HashMap 也是内聚性的，即所有的 K 必须拥有同样的类型，V 也是如此。
+All collection types are dynamic, meaning they have no fixed size in memory, so their data is stored on the heap and accessed through a reference stored on the stack. Like the other collections, HashMap is homogeneous: all keys must have the same type, and so must all values.
 
-跟 Vec 一样，如果预先知道要存储的 KV 对个数，可以使用 HashMap::with_capacity(capacity) 创建指定大小的 HashMap，避免频繁的内存分配和拷贝，提升性能。
+As with Vec, if you know in advance how many KV pairs will be stored, create a HashMap of that size with HashMap::with_capacity(capacity) to avoid frequent allocations and copies, which improves performance.
 
-> 使用迭代器和 collect 方法创建
+> Creating one with an iterator and collect
 
-into_iter 方法将列表转为迭代器，接着通过 collect 进行收集，不过需要注意的是，collect 方法在内部实际上支持生成多种类型的目标集合，因此我们需要通过类型标注 HashMap<_,_> 来告诉编译器：请帮我们收集为 HashMap 集合类型
+The into_iter method turns the list into an iterator, which collect then gathers. Note that collect can produce many kinds of target collections, so we need the type annotation HashMap<_,_> to tell the compiler: please collect into a HashMap
 
 ```rust
 fn main() {
     use std::collections::HashMap;
 
     let teams_list = vec![
-        ("中国队".to_string(), 100),
-        ("美国队".to_string(), 10),
-        ("日本队".to_string(), 50),
+        ("Team China".to_string(), 100),
+        ("Team USA".to_string(), 10),
+        ("Team Japan".to_string(), 50),
     ];
 
     let teams_map: HashMap<_,_> = teams_list.into_iter().collect();
@@ -2302,10 +2347,10 @@ fn main() {
 }
 ```
 
-### 14.2. 所有权转移
+### 14.2. Ownership transfer
 
-- 若类型实现 Copy 特征，该类型会被复制进 HashMap，因此无所谓所有权
-- 若没实现 Copy 特征，所有权将被转移给 HashMap 中
+- If a type implements the Copy trait, it is copied into the HashMap, so ownership doesn't matter
+- If it doesn't implement Copy, ownership is moved into the HashMap
 
 ```rust
 fn main() {
@@ -2317,12 +2362,12 @@ fn main() {
     let mut handsome_boys = HashMap::new();
     handsome_boys.insert(name, age);
 
-    println!("因为过于无耻，{}已经被从帅气男孩名单中除名", name);
-    println!("还有，他的真实年龄远远不止{}岁", age);
+    println!("For being too shameless, {} has been removed from the list of handsome boys", name);
+    println!("Also, his real age is way more than {}", age);
 }
 ```
 
-运行代码，报错如下：
+Running the code gives this error:
 
 ```rust
 error[E0382]: borrow of moved value: `name`
@@ -2334,15 +2379,15 @@ error[E0382]: borrow of moved value: `name`
 8  |     handsome_boys.insert(name, age);
    |                          ---- value moved here
 9  |
-10 |     println!("因为过于无耻，{}已经被除名", name);
+10 |     println!("For being too shameless, {} has been removed", name);
    |                                            ^^^^ value borrowed here after move
 ```
 
-提示很清晰，name 是 String 类型，因此它受到所有权的限制，在 insert 时，它的所有权被转移给 handsome_boys，所以最后在使用时，会遇到这个无情但是意料之中的报错。
+The hint is clear: name is a String, so it is subject to ownership rules. On insert, its ownership moved to handsome_boys, so using it at the end produces this merciless but expected error.
 
-### 14.3. 查询 HashMap
+### 14.3. Querying a HashMap
 
-通过 get 方法可以获取元素：
+The get method retrieves an element:
 
 ```rust
 use std::collections::HashMap;
@@ -2356,16 +2401,16 @@ let team_name = String::from("Blue");
 let score: Option<&i32> = scores.get(&team_name);
 ```
 
-- get 方法返回一个 Option<&i32> 类型：当查询不到时，会返回一个 None，查询到时返回 Some(&i32)
-- &i32 是对 HashMap 中值的借用，如果不使用借用，可能会发生所有权的转移
+- get returns an Option<&i32>: None when nothing is found, Some(&i32) when it is
+- &i32 borrows the value in the HashMap; without borrowing, ownership might be moved
 
-如果我们想直接获得值类型的 score 该怎么办，答案简约但不简单:
+What if we want the score as a plain value? The answer is short but not simple:
 
 ```rust
 let score: i32 = scores.get(&team_name).copied().unwrap_or(0);
 ```
 
-### 14.4. 更新 HashMap 中的值
+### 14.4. Updating values in a HashMap
 
 ```rust
 fn main() {
@@ -2375,25 +2420,25 @@ fn main() {
 
     scores.insert("Blue", 10);
 
-    // 覆盖已有的值
+    // overwrite the existing value
     let old = scores.insert("Blue", 20);
     assert_eq!(old, Some(10));
 
-    // 查询新插入的值
+    // look up the newly inserted value
     let new = scores.get("Blue");
     assert_eq!(new, Some(&20));
 
-    // 查询Yellow对应的值，若不存在则插入新值
+    // look up Yellow's value; insert a new value if it doesn't exist
     let v = scores.entry("Yellow").or_insert(5);
-    assert_eq!(*v, 5); // 不存在，插入5
+    assert_eq!(*v, 5); // didn't exist, so 5 was inserted
 
-    // 查询Yellow对应的值，若不存在则插入新值
+    // look up Yellow's value; insert a new value if it doesn't exist
     let v = scores.entry("Yellow").or_insert(50);
-    assert_eq!(*v, 5); // 已经存在，因此50没有插入
+    assert_eq!(*v, 5); // already exists, so 50 was not inserted
 }
 ```
 
-常用场景如下：查询某个 key 对应的值，若不存在则插入新值，若存在则对已有的值进行更新，例如在文本中统计词语出现的次数：
+A common pattern: look up a key's value, insert a new value if it doesn't exist, and update the existing value if it does. For example, counting word occurrences in a text:
 
 ```rust
 use std::collections::HashMap;
@@ -2401,7 +2446,7 @@ use std::collections::HashMap;
 let text = "hello world wonderful world";
 
 let mut map = HashMap::new();
-// 根据空格来切分字符串(英文单词都是通过空格切分)
+// split the string on spaces (English words are separated by spaces)
 for word in text.split_whitespace() {
     let count = map.entry(word).or_insert(0);
     *count += 1;
@@ -2410,34 +2455,34 @@ for word in text.split_whitespace() {
 println!("{:?}", map);
 ```
 
-上面代码中，新建一个 map 用于保存词语出现的次数，插入一个词语时会进行判断：若之前没有插入过，则使用该词语作 Key，插入次数 0 作为 Value，若之前插入过则取出之前统计的该词语出现的次数，对其加一。
+The code above creates a map that stores how often each word appears. Inserting a word checks: if it wasn't inserted before, use it as the key with 0 as the value; if it was, take the stored count and add one.
 
-有两点值得注意：
+Two things are worth noting:
 
-- or_insert 返回了 &mut v 引用，因此可以通过该可变引用直接修改 map 中对应的值
-- 使用 count 引用时，需要先进行解引用 *count，否则会出现类型不匹配
+- or_insert returns a &mut v reference, so the corresponding value in the map can be modified directly through that mutable reference
+- count must be dereferenced (*count) before use, otherwise the types don't match
 
-### 14.5. 哈希函数
+### 14.5. Hash functions
 
 ```rust
 use std::hash::BuildHasherDefault;
 use std::collections::HashMap;
-// 引入第三方的哈希函数
+// bring in a third-party hash function
 use twox_hash::XxHash64;
 
-// 指定HashMap使用第三方的哈希函数XxHash64
+// make the HashMap use the third-party hash function XxHash64
 let mut hash: HashMap<_, _, BuildHasherDefault<XxHash64>> = Default::default();
 hash.insert(42, "the answer");
 assert_eq!(hash.get(&42), Some(&"the answer"));
 ```
 
-目前，HashMap 使用的哈希函数是 SipHash，它的性能不是很高，但是安全性很高。SipHash 在中等大小的 Key 上，性能相当不错，但是对于小型的 Key （例如整数）或者大型 Key （例如字符串）来说，性能还是不够好。
+HashMap currently uses the SipHash hash function. It is not very fast, but it is very secure. SipHash performs quite well on medium-sized keys, but not well enough for small keys (such as integers) or large keys (such as strings).
 
-## 15. 生命周期
+## 15. Lifetimes
 
-### 15.1. 悬垂指针和生命周期
+### 15.1. Dangling pointers and lifetimes
 
-生命周期的主要作用是避免悬垂引用，它会导致程序引用了本不该引用的数据：
+The main purpose of lifetimes is to prevent dangling references, which would make a program reference data it shouldn't:
 
 ```rust
 {
@@ -2452,48 +2497,48 @@ assert_eq!(hash.get(&42), Some(&"the answer"));
 }
 ```
 
-有几点值得注意:
+A few things are worth noting:
 
-- let r; 的声明方式貌似存在使用 null 的风险，实际上，当我们不初始化它就使用时，编译器会给予报错
-- r 引用了内部花括号中的 x 变量，但是 x 会在内部花括号 } 处被释放，因此回到外部花括号后，r 会引用一个无效的 x  
+- The let r; declaration seems to risk using null, but in fact the compiler reports an error if we use it without initializing it
+- r refers to the variable x inside the inner braces, but x is freed at the inner }, so back in the outer braces r would refer to an invalid x  
 
-此处 r 就是一个悬垂指针，它引用了提前被释放的变量 x，可以预料到，这段代码会报错：
+Here r is a dangling pointer, referring to the variable x that was freed too early. As expected, this code fails to compile:
 
 ```rust
-error[E0597]: `x` does not live long enough // `x` 活得不够久
+error[E0597]: `x` does not live long enough // `x` doesn't live long enough
   --> src/main.rs:
    |
    |             r = &x;
-   |                 ^^ borrowed value does not live long enough // 被借用的 `x` 活得不够久
+   |                 ^^ borrowed value does not live long enough // the borrowed `x` doesn't live long enough
    |         }
-   |         - `x` dropped here while still borrowed // `x` 在这里被丢弃，但是它依然还在被借用
+   |         - `x` dropped here while still borrowed // `x` is dropped here, but it is still borrowed
    |
    |         println!("r: {}", r);
-   |                           - borrow later used here // 对 `x` 的借用在此处被使用
+   |                           - borrow later used here // the borrow of `x` is used here
 ```
 
-在这里 r 拥有更大的作用域，或者说活得更久。如果 Rust 不阻止该悬垂引用的发生，那么当 x 被释放后，r 所引用的值就不再是合法的，会导致我们程序发生异常行为，且该异常行为有时候会很难被发现。
+Here r has the larger scope; it lives longer. If Rust didn't prevent this dangling reference, then once x was freed, the value r refers to would no longer be valid, causing misbehavior in the program that can sometimes be very hard to find.
 
-### 15.2. 借用检查
+### 15.2. The borrow checker
 
 
-### 15.3. 函数中的生命周期
+### 15.3. Lifetimes in functions
 
-生命周期的语法也颇为与众不同，以 ' 开头，名称往往是一个单独的小写字母，大多数人都用 'a 来作为生命周期的名称。 如果是引用类型的参数，那么生命周期会位于引用符号 & 之后，并用一个空格来将生命周期和引用参数分隔开:
+The lifetime syntax is rather unusual: it starts with ' and the name is usually a single lowercase letter; most people use 'a. For a reference parameter, the lifetime goes after the & and is separated from the referenced type by a space:
 
 ```text
-&i32        // 一个引用
-&'a i32     // 具有显式生命周期的引用
-&'a mut i32 // 具有显式生命周期的可变引用
+&i32        // a reference
+&'a i32     // a reference with an explicit lifetime
+&'a mut i32 // a mutable reference with an explicit lifetime
 ```
 
-一个生命周期标注，它自身并不具有什么意义，因为生命周期的作用就是告诉编译器多个引用之间的关系。例如，有一个函数，它的第一个参数 first 是一个指向 i32 类型的引用，具有生命周期 'a，该函数还有另一个参数 second，它也是指向 i32 类型的引用，并且同样具有生命周期 'a。此处生命周期标注仅仅说明，这两个参数 first 和 second 至少活得和'a 一样久，至于到底活多久或者哪个活得更久, 无法得知：
+A single lifetime annotation doesn't mean much on its own, because lifetimes exist to tell the compiler how several references relate. For example, take a function whose first parameter first is a reference to an i32 with lifetime 'a, and whose second parameter second is also a reference to an i32 with lifetime 'a. The annotations only say that both first and second live at least as long as 'a; how long exactly, or which lives longer, is unknown:
 
-## 16. 方法 Method
+## 16. Methods
 
-### 16.1. 定义方法
+### 16.1. Defining methods
 
-Rust 使用 impl 来定义方法，例如以下代码：
+Rust defines methods with impl, as in the following code:
 
 ```rust
 struct Rectangle {
@@ -2517,27 +2562,27 @@ fn main() {
 }
 ```
 
-Rust 的对象定义和方法定义是分离的，struct Rectangle 和 impl Rectangle，这种数据和使用分离的方式，会给予使用者极高的灵活度。  
+In Rust, the definition of an object and of its methods are separate: struct Rectangle and impl Rectangle. Separating data from its use gives users great flexibility.  
 
-impl Rectangle {} 表示为 Rectangle 实现方法(impl 是实现 implementation 的缩写)，这样的写法表明 impl 语句块中的一切都是跟 Rectangle 相关联的。  
+impl Rectangle {} implements methods for Rectangle (impl is short for implementation); everything in the impl block is associated with Rectangle.  
 
-### 16.2. self、&self 和 &mut self
+### 16.2. self, &self and &mut self
 
-在 area 的签名中，我们使用 &self 替代 rectangle: &Rectangle，&self 其实是 self: &Self 的简写（注意大小写）。在一个 impl 块内，Self 指代被实现方法的结构体类型，self 指代此类型的实例, self 指代的是 Rectangle 结构体实例.  
+In the signature of area we use &self instead of rectangle: &Rectangle; &self is short for self: &Self (note the case). Inside an impl block, Self refers to the struct type the methods are implemented for, and self refers to an instance of that type, here an instance of the Rectangle struct.  
 
-为哪个结构体实现方法，那么 self 就是指代哪个结构体的实例。  
+Whichever struct the methods are implemented for, self refers to an instance of that struct.  
 
-self 依然有所有权的概念：
+self still follows ownership:
 
-- self 表示 Rectangle 的所有权转移到该方法中，这种形式用的较少
-- &self 表示该方法对 Rectangle 的不可变借用
-- &mut self 表示可变借用
+- self means ownership of the Rectangle moves into the method; this form is rarely used
+- &self means the method borrows the Rectangle immutably
+- &mut self means a mutable borrow
 
-选择 &self 的理由跟在函数中使用 &Rectangle 是相同的：我们并不想获取所有权，也无需去改变它，只是希望能够读取结构体中的数据。如果想要在方法中去改变当前的结构体，需要将第一个参数改为 &mut self。仅仅通过使用 self 作为第一个参数来使方法获取实例的所有权是很少见的，这种使用方式往往用于把当前的对象转成另外一个对象时使用，转换完后，就不再关注之前的对象，且可以防止对之前对象的误调用。
+We choose &self for the same reason we'd use &Rectangle in a function: we don't want ownership and don't need to change the value, only read the struct's data. To change the struct in the method, make the first parameter &mut self. Taking ownership of the instance with plain self as the first parameter is rare; it's usually used when the method turns the object into something else, after which the old object is no longer relevant, and it prevents accidental use of the old object.
 
-### 16.3. 方法名跟结构体字段名相同
+### 16.3. Methods with the same name as a field
 
-在 Rust 中，允许方法名跟结构体的字段名相同：
+Rust allows a method to have the same name as a field of the struct:
 
 ```rust
 impl Rectangle {
@@ -2558,9 +2603,9 @@ fn main() {
 }
 ```
 
-当我们使用 rect1.width() 时，Rust 知道我们调用的是它的方法，如果使用 rect1.width，则是访问它的字段。
+When we write rect1.width(), Rust knows we're calling the method; rect1.width accesses the field.
 
-一般来说，方法跟字段同名，往往适用于实现 getter 访问器，例如:
+Methods with the same name as a field are typically used as getters, for example:
 
 ```rust
 pub struct Rectangle {
@@ -2584,9 +2629,9 @@ fn main() {
 }
 ```
 
-用这种方式，可以把 Rectangle 的字段设置为私有属性，只需把它的 new 和 width 方法设置为公开可见，那么用户就可以创建一个矩形，同时通过访问器 rect1.width() 方法来获取矩形的宽度，因为 width 字段是私有的，当用户访问 rect1.width 字段时，就会报错。注意在此例中，Self 指代的就是被实现方法的结构体 Rectangle。  
+This way, the fields of Rectangle can be private while its new and width methods are public: users can create a rectangle and get its width through the accessor rect1.width(), and since the width field is private, accessing rect1.width directly is an error. Note that in this example Self refers to Rectangle, the struct the methods are implemented for.  
 
-### 16.4. 带有多个参数的方法
+### 16.4. Methods with more parameters
 
 ```rust
 impl Rectangle {
@@ -2609,9 +2654,9 @@ fn main() {
 }
 ```
 
-### 16.5. 关联函数
+### 16.5. Associated functions
 
-在 impl 中且没有 self 的函数被称之为关联函数： 因为它没有 self，不能用 f.read() 的形式调用，因此它是一个函数而不是方法，它又在 impl 中，与结构体紧密关联，因此称为关联函数。
+A function in an impl block without self is called an associated function: without self it can't be called as f.read(), so it is a function rather than a method, and because it lives in the impl block, closely tied to the struct, it's called an associated function.
 
 ```rust
 impl Rectangle {
@@ -2621,11 +2666,11 @@ impl Rectangle {
 }
 ```
 
-因为是函数，所以不能用 . 的方式来调用，我们需要用 :: 来调用，例如 let sq = Rectangle::new(3, 3);。这个方法位于结构体的命名空间中：:: 语法用于关联函数和模块创建的命名空间。
+Because it's a function, it can't be called with .; use :: instead, as in let sq = Rectangle::new(3, 3);. The function lives in the struct's namespace: the :: syntax is used for associated functions and for namespaces created by modules.
 
-### 16.6. 多个 impl 定义
+### 16.6. Multiple impl blocks
 
-Rust 允许我们为一个结构体定义多个 impl 块，目的是提供更多的灵活性和代码组织性，例如当方法多了后，可以把相关的方法组织在同一个 impl 块中，那么就可以形成多个 impl 块，各自完成一块儿目标：
+Rust allows several impl blocks for one struct, for flexibility and code organization. For example, when there are many methods, related ones can be grouped into their own impl block, giving several blocks that each serve one purpose:
 
 ```rust
 impl Rectangle {
@@ -2641,9 +2686,9 @@ impl Rectangle {
 }
 ```
 
-### 16.7. 为枚举实现方法
+### 16.7. Implementing methods on enums
 
-枚举类型之所以强大，不仅仅在于它好用、可以同一化类型，还在于，我们可以像结构体一样，为枚举实现方法：
+Enums are powerful not only because they're convenient and can unify types, but also because, like structs, we can implement methods on them:
 
 ```rust
 enum Message {
@@ -2655,7 +2700,7 @@ enum Message {
 
 impl Message {
     fn call(&self) {
-        // 在这里定义方法体
+        // define the method body here
     }
 }
 
@@ -2665,56 +2710,56 @@ fn main() {
 }
 ```
 
-## 17. 使用 macro_rules! 来创建宏
+## 17. Creating macros with macro_rules!
 
-Rust 提供了一个强大的宏系统，可进行元编程（metaprogramming）。宏并不产生函数调用，而是展开成源码，并和程序的其余部分一起被编译。Rust 又有一点和 C 以及其他语言都不同，那就是 Rust 的宏会展开为抽象语法树（AST，abstract syntax tree），而不是像字符串预处理那样直接替换成代码，这样就不会产生无法预料的优先权错误。
+Rust has a powerful macro system for metaprogramming. Macros don't produce function calls; they expand into source code that is compiled with the rest of the program. Unlike C and other languages, Rust macros expand into abstract syntax trees (AST) instead of being substituted as text by a preprocessor, so there are no unexpected precedence bugs.
 
-宏是通过 macro_rules! 宏来创建的。
+Macros are created with the macro_rules! macro.
 
 ```rust
-// 这是一个简单的宏，名为 `say_hello`。
+// This is a simple macro named `say_hello`.
 macro_rules! say_hello {
-    // `()` 表示此宏不接受任何参数。
+    // `()` indicates that the macro takes no arguments.
     () => (
-        // 此宏将会展开成这个代码块里面的内容。
+        // The macro will expand into the contents of this block.
         println!("Hello!");
     )
 }
 
 fn main() {
-    // 这个调用将会展开成 `println("Hello");`!
+    // This call will expand into `println("Hello");`!
     say_hello!()
 }
 ```
 
-为什么宏是有用的？
+Why are macros useful?
 
-- 不写重复代码（DRY，Don't repeat yourself.）。很多时候你需要在一些地方针对不同 的类型实现类似的功能，可以使用宏来避免重复代码。
-- 领域专用语言（DSL，domain-specific language）。宏允许你为特定的目的创造特定的语法。
-- 可变接口（variadic interface）。能够接受不定数目参数的接口，比如 println!，根据格式化字符串的不同，它需要接受任意多的参数。
+- Don't repeat yourself (DRY). Often you need similar functionality for different types in several places; macros avoid the repetition.
+- Domain-specific languages (DSL). Macros let you define special syntax for a specific purpose.
+- Variadic interfaces. Interfaces that take a variable number of arguments, such as println!, which takes any number of arguments depending on the format string.
 
-### 17.1. 指示符
+### 17.1. Designators
 
-宏的参数使用一个美元符号 $ 作为前缀，并使用一个指示符（designator）来注明类型(https://doc.rust-lang.org/reference/macros-by-example.html)：
+Macro arguments are prefixed with a dollar sign $ and annotated with a designator for their type (https://doc.rust-lang.org/reference/macros-by-example.html):
 
-- block 块表达式
-- expr 用于表达式
-- ident 用于变量名或函数名
+- block: a block expression
+- expr: an expression
+- ident: a variable or function name
 - item Item
-- literal 用于字面常量
-- pat 模式 pattern
-- path TypePath 样式路径
-- stmt 语句 statement
-- tt 标记树 token tree
-- ty 类型 type
-- vis 可见性描述符
+- literal: a literal constant
+- pat: a pattern
+- path: a TypePath-style path
+- stmt: a statement
+- tt: a token tree
+- ty: a type
+- vis: a visibility qualifier
 
 ```rust
 macro_rules! print_result {
-    // 此宏接受一个 `expr` 类型的表达式，并将它作为字符串，连同其结果一起打印出来。
-    // `expr` 指示符表示表达式。
+    // This macro takes an expression of type `expr` and prints it as a string along with its result.
+    // The `expr` designator is used for expressions.
     ($expression:expr) => {
-        // `stringify!` 把表达式*原样*转换成一个字符串。
+        // `stringify!` converts the expression *as it is* into a string.
         println!("{:?} = {:?}", stringify!($expression), $expression)
     };
 }
@@ -2724,7 +2769,7 @@ fn main() {
     bar();
     print_result!(1u32 + 1); // "1u32 + 1" = 2
 
-    // 代码块也是表达式！
+    // Blocks are expressions too!
     print_result!({
         let x = 1u32;
         x * x + 2 * x - 1
@@ -2732,13 +2777,13 @@ fn main() {
 }
 ```
 
-### 17.2. 重载
+### 17.2. Overloading
 
-宏可以重载，从而接受不同的参数组合。在这方面，macro_rules! 的作用类似于匹配（match）代码块：
+Macros can be overloaded to accept different combinations of arguments. In that sense, macro_rules! works like a match block:
 
 ```rust
 macro_rules! test {
-    // 参数不需要使用逗号隔开。 参数可以任意组合！
+    // Arguments don't need to be separated by a comma. Any template can be used!
     ($left:expr; and $right:expr) => {
         println!(
             "{:?} and {:?} is {:?}",
@@ -2747,7 +2792,7 @@ macro_rules! test {
             $left && $right
         )
     };
-    // 每个分支都必须以分号结束。
+    // Each arm must end with a semicolon.
     ($left:expr; or $right:expr) => {
         println!(
             "{:?} or {:?} is {:?}",
@@ -2764,19 +2809,19 @@ fn main() {
 }
 ```
 
-### 17.3. 重复
+### 17.3. Repetition
 
-宏在参数列表中可以使用 + 来表示一个参数可能出现一次或多次，使用 * 来表示该参数可能出现零次或多次。
+In the argument list, a macro can use + to indicate that an argument may repeat at least once, and * to indicate that it may repeat zero or more times.
 
-> $(...),+ 包围起来，就可以匹配一个或多个用逗号隔开的表达式。另外注意到，宏定义的最后一个分支可以不用分号作为结束。
+> Wrapping in $(...),+ matches one or more comma-separated expressions. Also note that the semicolon is optional on the last arm of a macro.
 
 ```rust
 macro_rules! find_min {
-    // 基本情形：
+    // Base case:
     ($x:expr) => ($x);
-    // `$x` 后面跟着至少一个 `$y,`
+    // `$x` followed by at least one `$y,`
     ($x:expr, $($y:expr),+) => (
-        // 对 `$x` 后面的 `$y` 们调用 `find_min!`
+        // Call `find_min!` on the tail `$y`
         std::cmp::min($x, find_min!($($y),+))
     )
 }
@@ -2788,15 +2833,15 @@ fn main() {
 }
 ```
 
-### 17.4. DRY (不写重复代码)
+### 17.4. DRY (Don't Repeat Yourself)
 
-通过提取函数或测试集的公共部分，宏可以让你写出 DRY 的代码, 一个例子，对 Vec<T> 实现并测试了关于 +=、*= 和 -= 等运算符。
+By factoring out the common parts of functions or test suites, macros let you write DRY code. For example, implementing and testing the +=, *= and -= operators on Vec<T>:
 
 ```rust
 use std::ops::{Add, Mul, Sub};
 
 macro_rules! assert_equal_len {
-    // `tt`（token tree，标记树）指示符表示运算符和标记。
+    // The `tt` (token tree) designator is used for operators and tokens.
     ($a:ident, $b: ident, $func:ident, $op:tt) => {
         assert!(
             $a.len() == $b.len(),
@@ -2816,29 +2861,29 @@ macro_rules! op {
 
             for (x, y) in xs.iter_mut().zip(ys.iter()) {
                 *x = $bound::$method(*x, *y);
-                // *x = x.$method(*y); // 效果同上
+                // *x = x.$method(*y); // same effect as above
             }
         }
     };
 }
 
-// 实现 `add_assign`、`mul_assign` 和 `sub_assign` 等函数。
+// Implement the `add_assign`, `mul_assign` and `sub_assign` functions.
 op!(add_assign, Add, +=, add);
 op!(mul_assign, Mul, *=, mul);
 op!(sub_assign, Sub, -=, sub);
 ```
 
-### 17.5. DSL（领域专用语言）
+### 17.5. DSL (domain-specific languages)
 
-DSL 是 Rust 的宏中集成的微型 “语言”。这种语言是完全合法的，因为宏系统会把它转换成普通的 Rust 语法树，它只不过看起来像是另一种语言而已。这就允许你为一些特定功能创造一套简洁直观的语法（当然是有限制的）。
+A DSL is a mini "language" embedded in a Rust macro. It is completely valid Rust, because the macro system expands it into normal Rust syntax trees; it just looks like another language. This lets you define concise, intuitive syntax for some special functionality (within limits).
 
-定义一套小的计算器 API，可以传给它表达式，它会把结果打印到控制台上。
+Define a small calculator API: pass it an expression and it prints the result to the console.
 
 ```rust
 macro_rules! calculate {
     (eval $e:expr) => {{
         {
-            let val: usize = $e; // 强制类型为整型
+            let val: usize = $e; // Force the type to integers
             println!("{} = {}", stringify!{$e}, val);
         }
     }};
@@ -2846,7 +2891,7 @@ macro_rules! calculate {
 
 fn main() {
     calculate! {
-        eval 1 + 2 // `eval` 可并不是 Rust 的关键字！
+        eval 1 + 2 // hehehe `eval` is _not_ a Rust keyword!
     } // 1 + 2 = 3
 
     calculate! {
@@ -2855,13 +2900,13 @@ fn main() {
 }
 ```
 
-### 17.6. 可变参数接口
+### 17.6. Variadic interfaces
 
-可变参数接口可以接受任意数目的参数。比如说 println 就可以，其参数的数目是由格式化字符串指定的。
+A variadic interface takes an arbitrary number of arguments. println can, for example, with the number of arguments determined by the format string.
 
 ```rust
 macro_rules! calculate {
-    // 单个 `eval` 的模式
+    // The pattern for a single `eval`
     (eval $e:expr) => {{
         {
             let val: usize = $e; // Force types to be integers
@@ -2869,7 +2914,7 @@ macro_rules! calculate {
         }
     }};
 
-    // 递归地拆解多重的 `eval`
+    // Decompose multiple `eval`s recursively
     (eval $e:expr, $(eval $es:expr),+) => {{
         calculate! { eval $e }
         calculate! { $(eval $es),+ }
@@ -2877,7 +2922,7 @@ macro_rules! calculate {
 }
 
 fn main() {
-    calculate! { // 可变参数的 `calculate!`！
+    calculate! { // Look ma! Variadic `calculate!`!
         eval 1 + 2,
         eval 3 + 4,
         eval (2 * 3) + 1,
@@ -2890,19 +2935,19 @@ fn main() {
 }
 ```
 
-## 18. 错误处理
+## 18. Error handling
 
-错误处理（error handling）是处理可能发生的失败情况的过程。例如读取一个文件时失败了，如果继续使用这个无效的输入，那显然是有问题的。注意到并且显式地处理这种错误可以避免程序的其他部分产生潜在的问题。
+Error handling is the process of handling the possibility of failure. For example, failing to read a file and then continuing to use that bad input would clearly be problematic. Noticing and explicitly managing those errors saves the rest of the program from various pitfalls.
 
-在 Rust 中有多种处理错误的方式:
+There are various ways to deal with errors in Rust:
 
-- 显式的 panic 主要用于测试，以及处理不可恢复的错误。在原型开发中这很有用，比如 用来测试还没有实现的函数，不过这时使用 unimplemented 更能表达意图。另外在 测试中，panic 是一种显式地失败（fail）的好方法。
-- Option 类型是为了值是可选的、或者缺少值并不是错误的情况准备的。比如说寻找 父目录时，/ 和 C: 这样的目录就没有父目录，这应当并不是一个错误。当处理 Option 时，unwrap 可用于原型开发，也可以用于能够确定 Option 中一定有值 的情形。然而 expect 更有用，因为它允许你指定一条错误信息，以免万一还是出现 了错误。
-- 当错误有可能发生，且应当由调用者处理时，使用 Result。你也可以 unwrap 然后 使用 expect，但是除了在测试或者原型开发中，请不要这样做。
+- An explicit panic is mainly useful for tests and dealing with unrecoverable errors. For prototyping it can be useful, for example when dealing with functions that haven't been implemented yet, but in those cases the more descriptive unimplemented is better. In tests, panic is a reasonable way to explicitly fail.
+- The Option type is for when a value is optional or when the lack of a value is not an error condition. For example, the parent of a directory: / and C: don't have one, which shouldn't be an error. When dealing with Options, unwrap is fine for prototyping and for cases where it's certain there is a value. However, expect is more useful, since it lets you specify an error message in case something goes wrong anyway.
+- When there is a chance that things go wrong and the caller has to deal with the problem, use Result. You can unwrap and expect them too, but please don't do that unless it's a test or quick prototype.
 
 ### 18.1. panic
 
-最简单的错误处理机制就是 panic。它会打印一个错误消息，开始回退（unwind）任务，且通常会退出程序。这里我们显式地在错误条件下调用 panic：
+The simplest error handling mechanism is panic. It prints an error message, starts unwinding the stack, and usually exits the program. Here we explicitly call panic on our error condition:
 
 ```rust
 fn give_princess(gift: &str) {
@@ -2919,21 +2964,21 @@ fn main() {
 }
 ```
 
-### 18.2. Option 和 unwrap
+### 18.2. Option and unwrap
 
-在标准库（std）中有个叫做 Option<T>（option 中文意思是 “选项”）的枚举类型，用于有 “不存在” 的可能性的情况。它表现为以下两个 “option”（选项）中的一个：
+The standard library (std) has an enum called Option<T> for cases where absence is a possibility. It manifests itself as one of two "options":
 
-- Some(T)：找到一个属于 T 类型的元素
-- None：找不到相应元素
+- Some(T): an element of type T was found
+- None: no element was found
 
-这些选项可以通过 match 显式地处理，或使用 unwrap 隐式地处理。隐式处理要么返回 Some 内部的元素，要么就 panic。
+These cases can be handled explicitly with match, or implicitly with unwrap. Implicit handling either returns the inner element or panics.
 
-手动使用 expect 方法自定义 panic 信息是可能的，但相比显式处理，unwrap 的输出仍显得不太有意义。在下面例子中，显式处理将举出更受控制的结果，同时如果需要的话，仍然可以使程序 panic。
+The panic message can be customized manually with expect, but unwrap otherwise leaves us with a less meaningful output than explicit handling. In the following example, explicit handling yields a more controlled result while retaining the option to panic if desired.
 
 ```rust
-// 显式地使用 `match` 来处理。
+// Handled explicitly with `match`.
 fn give_commoner(gift: Option<&str>) {
-    // 指出每种情况下的做法。
+    // Specify a course of action for each case.
     match gift {
         Some("snake") => println!("Yuck! I'm throwing that snake in a fire."),
         Some(inner) => println!("{}? How nice.", inner),
@@ -2941,9 +2986,9 @@ fn give_commoner(gift: Option<&str>) {
     }
 }
 
-// 使用 `unwrap` 隐式地处理。
+// Handled implicitly with `unwrap`.
 fn give_princess(gift: Option<&str>) {
-    // `unwrap` 在接收到 `None` 时将返回 `panic`。
+    // `unwrap` returns a `panic` when it receives a `None`.
     let inside = gift.unwrap();
     if inside == "snake" {
         panic!("AAAaaaaa!!!!");
@@ -2969,9 +3014,9 @@ fn main() {
 }
 ```
 
-### 18.3. 使用 ? 解开 Option
+### 18.3. Unpacking Options with ?
 
-如果 x 是 Option，那么若 x 是 Some ，对x?表达式求值将返回底层值，否则无论函数是否正在执行都将终止且返回 None。
+If x is an Option, evaluating x? returns the underlying value if x is Some; otherwise it terminates whatever function is executing and returns None.
 
 ```rust
 struct Person {
@@ -2990,9 +3035,9 @@ struct PhoneNumber {
 }
 
 impl Person {
-    // 获取此人的工作电话号码的区号（如果存在的话）。
+    // Gets the area code of the phone number of the person's job, if it exists.
     fn work_phone_area_code(&self) -> Option<u8> {
-        // 没有`？`运算符的话，这将需要很多的嵌套的 `match` 语句。
+        // This would need many nested `match` statements without the `?` operator.
         self.job?.phone_number?.area_code
     }
 }
@@ -3011,13 +3056,13 @@ fn main() {
 }
 ```
 
-### 18.4. 组合算子：map
+### 18.4. Combinators: map
 
-match 是处理 Option 的一个可用的方法，但你会发现大量使用它会很繁琐，特别是当操作只对一种输入是有效的时。这时，可以使用组合算子（combinator），以模块化的风格来管理控制流。
+match is a valid way to handle Options, but using it heavily becomes tedious, especially with operations only valid for one kind of input. In those cases, combinators can manage control flow in a modular fashion.
 
-Option 有一个内置方法 map()，这个组合算子可用于 Some -> Some 和 None -> None 这样的简单映射。多个不同的 map() 调用可以串起来，这样更加灵活。
+Option has a built-in method map(), a combinator for the simple mapping of Some -> Some and None -> None. Several map() calls can be chained for even more flexibility.
 
-在下面例子中，process() 轻松取代了前面的所有函数，且更加紧凑。
+In the following example, process() replaces all the functions before it while staying compact.
 
 ```rust
 #[derive(Debug)]
@@ -3034,7 +3079,7 @@ struct Chopped(Food);
 #[derive(Debug)]
 struct Cooked(Food);
 
-// 削皮。如果没有食物，就返回 `None`。否则返回削好皮的食物。
+// Peeling food. If there isn't any, return `None`. Otherwise, return the peeled food.
 fn peel(food: Option<Food>) -> Option<Peeled> {
     match food {
         Some(food) => Some(Peeled(food)),
@@ -3042,7 +3087,7 @@ fn peel(food: Option<Food>) -> Option<Peeled> {
     }
 }
 
-// 切食物。如果没有食物，就返回 `None`。否则返回切好的食物。
+// Chopping food. If there isn't any, return `None`. Otherwise, return the chopped food.
 fn chop(peeled: Option<Peeled>) -> Option<Chopped> {
     match peeled {
         Some(Peeled(food)) => Some(Chopped(food)),
@@ -3050,19 +3095,19 @@ fn chop(peeled: Option<Peeled>) -> Option<Chopped> {
     }
 }
 
-// 烹饪食物。这里，我们使用 `map()` 来替代 `match` 以处理各种情况。
+// Cooking food. Here, we use `map()` instead of `match` to handle the cases.
 fn cook(chopped: Option<Chopped>) -> Option<Cooked> {
     chopped.map(|Chopped(food)| Cooked(food))
 }
 
-// 这个函数会完成削皮切块烹饪一条龙。我们把 `map()` 串起来，以简化代码。
+// A function to peel, chop, and cook food all in sequence. We chain multiple uses of `map()` to simplify the code.
 fn process(food: Option<Food>) -> Option<Cooked> {
     food.map(|f| Peeled(f))
         .map(|Peeled(f)| Chopped(f))
         .map(|Chopped(f)| Cooked(f))
 }
 
-// 在尝试吃食物之前确认食物是否存在是非常重要的！
+// Check whether there's food or not before trying to eat it!
 fn eat(food: Option<Cooked>) {
     match food {
         Some(food) => println!("Mmm. I love {:?}", food),
@@ -3077,9 +3122,9 @@ fn main() {
 
     let cooked_apple = cook(chop(peel(apple)));
     // let cooked_carrot = cook(chop(peel(carrot)));
-    let cooked_carrot = process(carrot); // 结果同上
+    let cooked_carrot = process(carrot); // same result as above
 
-    // 看起来更简单的 `process()`
+    // Let's try the simpler looking `process()` now.
     let cooked_potato = process(potato);
 
     eat(cooked_apple); // Mmm. I love Cooked(Apple)
@@ -3088,11 +3133,11 @@ fn main() {
 }
 ```
 
-### 18.5. 组合算子：and_then
+### 18.5. Combinators: and_then
 
-map() 以链式调用的方式来简化 match 语句。然而，如果以返回类型是 Option<T> 的函数作为 map() 的参数，会导致出现嵌套形式 Option<Option<T>>。这样多层串联调用就会变得混乱。所以有必要引入 and_then()，在某些语言中它叫做 flatmap。
+map() simplifies match statements with chained calls. However, using map() with a function that returns an Option<T> results in the nested Option<Option<T>>, and chaining multiple calls together becomes confusing. That's where and_then() comes in, known in some languages as flatmap.
 
-and_then() 使用被 Option 包裹的值来调用其输入函数并返回结果。 如果 Option 是 None，那么它返回 None。
+and_then() calls its function input with the wrapped value and returns the result. If the Option is None, it returns None instead.
 
 ```rust
 enum Food {
@@ -3107,7 +3152,7 @@ enum Day {
     Wednesday,
 }
 
-// 没有制作寿司所需的原材料（ingredient）（有其他的原材料）。
+// We don't have the ingredients to make Sushi (we have others).
 fn have_ingredients(food: Food) -> Option<Food> {
     match food {
         Food::Sushi => None,
@@ -3115,7 +3160,7 @@ fn have_ingredients(food: Food) -> Option<Food> {
     }
 }
 
-// 拥有全部食物的食谱，除了法国蓝带猪排（Cordon Bleu）的。
+// We have the recipe for everything except Cordon Bleu.
 fn have_recipe(food: Food) -> Option<Food> {
     match food {
         Food::CordonBleu => None,
@@ -3123,7 +3168,7 @@ fn have_recipe(food: Food) -> Option<Food> {
     }
 }
 
-// 一系列 `match` 来表达这个逻辑：
+// A series of `match`es expressing this logic:
 fn cookable_v1(food: Food) -> Option<Food> {
     match have_ingredients(food) {
         None => None,
@@ -3134,7 +3179,7 @@ fn cookable_v1(food: Food) -> Option<Food> {
     }
 }
 
-// 也可以使用 `and_then()` 把上面的逻辑改写得更紧凑：
+// The logic above can be rewritten more compactly with `and_then()`:
 fn cookable_v2(food: Food) -> Option<Food> {
     have_ingredients(food).and_then(have_recipe)
 }
@@ -3155,20 +3200,20 @@ fn main() {
 }
 ```
 
-### 18.6. 结果 Result
+### 18.6. Result
 
-Result 是 Option 类型的更丰富的版本，描述的是可能的错误而不是可能的不存在。
+Result is a richer version of the Option type that describes a possible error instead of a possible absence.
 
-也就是说，Result<T，E> 可以有两个结果的其中一个：
+That is, Result<T, E> can have one of two outcomes:
 
-- Ok<T>：找到 T 元素
-- Err<E>：找到 E 元素，E 即表示错误的类型。
+- Ok<T>: an element T was found
+- Err<E>: an error was found with element E, the type of the error.
 
-按照约定，预期结果是 “Ok”，而意外结果是 “Err”。
+By convention, the expected outcome is Ok, while the unexpected outcome is Err.
 
-Result 有很多类似 Option 的方法。例如 unwrap()，它要么举出元素 T，要么就 panic。 对于事件的处理，Result 和 Option 有很多相同的组合算子。
+Like Option, Result has many associated methods. unwrap(), for example, either yields the element T or panics. For case handling, there are many combinators shared between Result and Option.
 
-在使用 Rust 时，你可能会遇到返回 Result 类型的方法，例如 parse() 方法。它并不是总能把字符串解析成指定的类型，所以 parse() 返回一个 Result 表示可能的失败。
+Working with Rust, you'll likely meet methods that return a Result, such as parse(). It can't always parse a string into the requested type, so parse() returns a Result indicating possible failure.
 
 ```rust
 fn multiply(first_number_str: &str, second_number_str: &str) -> i32 {
@@ -3186,15 +3231,15 @@ fn main() {
 }
 ```
 
-在失败的情况下，parse() 产生一个错误，留给 unwrap() 来解包并产生 panic。另外，panic 会退出我们的程序，并提供一个让人很不爽的错误消息。
+In the failing case, parse() leaves us with an error for unwrap() to panic on. The panic also exits our program and gives an unpleasant error message.
 
-为了改善错误消息的质量，我们应该更具体地了解返回类型并考虑显式地处理错误。
+To improve the quality of the error message, we should be more specific about the return type and consider explicitly handling the error.
 
-### 18.7. Result 的 map
+### 18.7. map for Result
 
-一般地，希望把错误返回给调用者，这样它可以决定回应错误的正确方式。
+In general, we want to return the error to the caller so it can decide the right way to respond.
 
-首先，需要了解需要处理的错误类型是什么。为了确定 Err 的类型，可以用 parse() 来试验。Rust 已经为 i32 类型使用 FromStr trait 实现了 parse()。结果表明，这里的 Err 类型被指定为 ParseIntError。
+First we need to know what kind of error type we're dealing with. To find the Err type, we look at parse(), which is implemented with the FromStr trait for i32. As a result, the Err type is specified as ParseIntError.
 
 ```rust
 fn multiply(first_number_str: &str, second_number_str: &str) -> Result<i32, ParseIntError> {
@@ -3213,27 +3258,27 @@ fn print(result: Result<i32, ParseIntError>) {
 }
 
 fn main() {
-    // 这种情况下仍然会给出正确的答案。
+    // This still presents a reasonable answer.
     let twenty = multiply("10", "2");
     print(twenty); // n is 20
 
-    // 这种情况下就会提供一条更有用的错误信息。
+    // The following now provides a much more helpful error message.
     let tt = multiply("t", "2");
     print(tt); // Error: invalid digit found in string
 }
 ```
 
-### 18.8. 给 Result 取别名
+### 18.8. Aliases for Result
 
-在模块的层面上创建别名特别有帮助。同一模块中的错误常常会有相同的 Err 类型，所以单个别名就能简便地定义所有相关的 Result。标准库也提供了一个别名： io::Result！
+Aliases are especially helpful at the module level. Errors in one module often share the same Err type, so a single alias can succinctly define all associated Results. The standard library even provides one: io::Result!
 
 ```rust
 use std::num::ParseIntError;
 
-// 为带有错误类型 `ParseIntError` 的 `Result` 定义一个泛型别名。
+// Define a generic alias for a `Result` with the error type `ParseIntError`.
 type AliasedResult<T> = Result<T, ParseIntError>;
 
-// 使用上面定义过的别名来表示上一节中的 `Result<i32,ParseIntError>` 类型。
+// Use the alias above to refer to our specific `Result<i32,ParseIntError>` type from the previous section.
 fn multiply(first_number_str: &str, second_number_str: &str) -> AliasedResult<i32> {
     first_number_str.parse::<i32>().and_then(|first_number| {
         second_number_str
@@ -3242,7 +3287,7 @@ fn multiply(first_number_str: &str, second_number_str: &str) -> AliasedResult<i3
     })
 }
 
-// 在这里使用别名又让我们节省了一些代码量。
+// Here, the alias again saves us some code.
 fn print(result: AliasedResult<i32>) {
     match result {
         Ok(n) => println!("n is {}", n),
@@ -3256,11 +3301,11 @@ fn main() {
 }
 ```
 
-### 18.9. 提前返回
+### 18.9. Early returns
 
-另一种处理错误的方式是使用 match 语句和提前返回（early return）的结合。
+Another way to deal with errors is to combine match statements with early returns.
 
-如果发生错误，我们可以停止函数的执行然后返回错误。对有些人来说，这样的代码更好写，更易读。这次我们使用提前返回改写之前的例子：
+If an error occurs, we can stop executing the function and return the error. For some, this style of code is easier to both read and write. Here is the earlier example rewritten with early returns:
 
 ```rust
 use std::num::ParseIntError;
@@ -3292,14 +3337,14 @@ fn main() {
 }
 ```
 
-### 18.10. 引入 ?
+### 18.10. Introducing ?
 
-有时我们只是想 unwrap 且避免产生 panic。到现在为止，对 unwrap 的错误处理都在强迫我们一层层地嵌套，然而我们只是想把里面的变量拿出来。? 正是为这种情况准备的, ? 几乎就等于一个会返回 Err 而不是 panic 的 unwrap。
+Sometimes we just want the simplicity of unwrap without the possibility of a panic. Until now, handling unwrap errors forced us to nest deeper and deeper when all we wanted was to get the variable out. ? is exactly for this: ? is almost exactly equivalent to an unwrap that returns instead of panicking on Err.
 
-当找到一个 Err 时，可以采取两种行动：
+Upon finding an Err, there are two valid actions:
 
-- panic!，不过我们已经决定要尽可能避免 panic 了。
-- 返回它，因为 Err 就意味着它已经不能被处理了。
+- panic!, which we already decided to avoid where possible.
+- return it, because an Err means it cannot be handled.
 
 ```rust
 use std::num::ParseIntError;
@@ -3324,9 +3369,9 @@ fn main() {
 }
 ```
 
-### 18.11. try! 宏
+### 18.11. The try! macro
 
-在 ? 出现以前，相同的功能是使用 try! 宏完成的。现在我们推荐使用 ? 运算符，但是在老代码中仍然会看到 try!。如果使用 try! 的话，上一个例子中的 multiply 函数看起来会像是这样：
+Before ? existed, the same functionality was achieved with the try! macro. The ? operator is now recommended, but you may still find try! in older code. With try!, the multiply function from the previous example would look like this:
 
 ```rust
 use std::num::ParseIntError;
@@ -3351,16 +3396,16 @@ fn main() {
 }
 ```
 
-### 18.12. 处理多种错误类型
+### 18.12. Handling multiple error types
 
-有时 Option 需要和 Result 进行交互，或是 Result<T, Error1> 需要和 Result<T, Error2> 进行交互。在这类情况下，我们想要以一种方式来管理不同的错误类型，使得它们可组合且易于交互。
+Sometimes an Option needs to interact with a Result, or a Result<T, Error1> with a Result<T, Error2>. In those cases we want to manage the different error types in a way that makes them composable and easy to interact with.
 
-在下面代码中，unwrap 的两个实例生成了不同的错误类型。Vec::first 返回一个 Option，而 parse::<i32> 返回一个 Result<i32, ParseIntError>：
+In the following code, two instances of unwrap generate different error types. Vec::first returns an Option, while parse::<i32> returns a Result<i32, ParseIntError>:
 
 ```rust
 fn double_first(vec: Vec<&str>) -> i32 {
-    let first = vec.first().unwrap(); // 生成错误 1
-    2 * first.parse::<i32>().unwrap() // 生成错误 2
+    let first = vec.first().unwrap(); // Generate error 1
+    2 * first.parse::<i32>().unwrap() // Generate error 2
 }
 
 fn main() {
@@ -3371,16 +3416,16 @@ fn main() {
     println!("The first doubled is {}", double_first(numbers)); // The first doubled is 84
  
     println!("The first doubled is {}", double_first(empty)); // called `Option::unwrap()` on a `None` value
-    // 错误1：输入 vector 为空
+    // Error 1: the input vector is empty
 
     println!("The first doubled is {}", double_first(strings)); // called `Result::unwrap()` on an `Err` value: ParseIntError { kind: InvalidDigit }
-    // 错误2：此元素不能解析成数字
+    // Error 2: the element doesn't parse to a number
 }
 ```
 
-### 18.13. 从 Option 中取出 Result
+### 18.13. Pulling Results out of Options
 
-处理混合错误类型的最基本的手段就是让它们互相包含。 Option 是 None 则继续处理错误。一些组合算子可以让我们轻松地交换 Result 和 Option。
+The most basic way of handling mixed error types is to embed them in each other. If the Option is None, error handling continues. Some combinators make it easy to swap a Result and an Option.
 
 ```rust
 use std::num::ParseIntError;
@@ -3402,19 +3447,19 @@ fn main() {
 }
 ```
 
-### 18.4. 定义一个错误类型
+### 18.14. Defining an error type
 
-Rust 允许我们定义自己的错误类型。一般来说，一个 “好的” 错误类型应当：
+Rust allows us to define our own error types. In general, a "good" error type:
 
-- 用同一个类型代表了多种错误
-- 向用户提供了清楚的错误信息
-- 能够容易地与其他类型比较
-  - 好的例子：Err(EmptyVec)
-  - 坏的例子：Err("Please use a vector with at least one element".to_owned())
-- 能够容纳错误的具体信息
-  - 好的例子：Err(BadChar(c, position))
-  - 坏的例子：Err("+ cannot be used here".to_owned())
-- 能够与其他错误很好地整合
+- represents different errors with the same type
+- presents nice error messages to the user
+- is easy to compare with other types
+  - Good: Err(EmptyVec)
+  - Bad: Err("Please use a vector with at least one element".to_owned())
+- can hold information about the error
+  - Good: Err(BadChar(c, position))
+  - Bad: Err("+ cannot be used here".to_owned())
+- composes well with other errors
 
 ```rust
 use std::error;
@@ -3423,30 +3468,30 @@ use std::fmt;
 type Result<T> = std::result::Result<T, DoubleError>;
 
 #[derive(Debug, Clone)]
-// 定义我们的错误类型，这种类型可以根据错误处理的实际情况定制。
-// 可以完全自定义错误类型，也可以在类型中完全采用底层的错误实现，也可以介于二者之间。
+// Define our error type. It can be customized for our error handling cases.
+// We can write our own errors, defer to an underlying error implementation, or do something in between.
 struct DoubleError;
 
-// 没有储存关于错误的任何额外信息，也就是说，如果不修改我们的错误类型定义的话，就无法指明是哪个字符串解析失败了。
+// It stores no extra information about the error, so without changing our error type we can't say which string failed to parse.
 impl fmt::Display for DoubleError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "invalid first item to double")
     }
 }
 
-// 为 `DoubleError` 实现 `Error` trait，这样其他错误可以包裹这个错误类型。
+// Implement the `Error` trait for `DoubleError`, so other errors can wrap this error type.
 impl error::Error for DoubleError {
     fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        None // 泛型错误，没有记录其内部原因。
+        None // Generic error, doesn't track the internal cause.
     }
 }
 
 fn double_first(vec: Vec<&str>) -> Result<i32> {
     vec.first()
-        .ok_or(DoubleError) // 把错误换成我们的新类型。
+        .ok_or(DoubleError) // Change the error to our new type.
         .and_then(|s| {
             s.parse::<i32>()
-                .map_err(|_| DoubleError) // 这里也换成新类型。
+                .map_err(|_| DoubleError) // Update to the new error type here too.
                 .map(|i| 2 * i)
         })
 }
@@ -3469,16 +3514,16 @@ fn main() {
 }
 ```
 
-### 18.5. 把错误 “装箱”
+### 18.15. Boxing errors
 
-想写简单的代码，又想保存原始错误信息，一个方法是把它们装箱（Box）。这样做的坏处就是，被包装的错误类型只能在运行时了解，而不能被静态地判别。
+One way to write simple code while preserving the original errors is to Box them. The drawback is that the underlying error type is only known at runtime, not statically determined.
 
-### 18.6. ? 的其他用法
+### 18.16. Other uses of ?
 
-? 实际上是指 unwrap 或 return Err(From::from(err))。由于 From::from 是不同类型之间的转换工具，也就是说，如果在错误可转换成返回类型地方使用 ?，它将自动转换成返回类型。
+? actually means either unwrap or return Err(From::from(err)). Since From::from converts between different types, if you use ? where the error can be converted to the return type, it converts automatically.
 
 ```rust
-// 使用 `?` 立即得到内部值。
+// Use `?` to get the inner value immediately.
 fn double_first(vec: Vec<&str>) -> Result<i32> {
     let first = vec.first().ok_or(EmptyVec)?;
     let parsed = first.parse::<i32>()?;
@@ -3486,17 +3531,17 @@ fn double_first(vec: Vec<&str>) -> Result<i32> {
 }
 ```
 
-### 18.7. 包裹错误
+### 18.17. Wrapping errors
 
 
-### 18.8 遍历Result
+### 18.18. Iterating over Results
 
-Iter::map 操作可能失败
+An Iter::map operation might fail
 
 
-#### 18.8.1 使用 filter_map() 忽略失败的项
+#### 18.18.1. Ignoring failed items with filter_map()
 
-filter_map 会调用一个函数，过滤掉为 None 的所有结果。
+filter_map calls a function and filters out the results that are None.
 
 ```rust
 fn main() {
@@ -3509,9 +3554,9 @@ fn main() {
 }
 ```
 
-#### 18.8.2. 使用 collect() 使整个操作失败
+#### 18.18.2. Failing the entire operation with collect()
 
-Result 实现了 FromIter，因此结果的向量（Vec<Result<T, E>>）可以被转换成结果包裹着向量（Result<Vec<T>, E>）。一旦找到一个 Result::Err ，遍历就被终止。
+Result implements FromIter, so a vector of results (Vec<Result<T, E>>) can be turned into a result wrapping a vector (Result<Vec<T>, E>). Once a Result::Err is found, the iteration stops.
 
 ```rust
 fn main() {
@@ -3524,7 +3569,7 @@ fn main() {
 }
 ```
 
-#### 18.8.3. 使用 Partition() 收集所有合法的值与错误
+#### 18.18.3. Collecting all valid values and errors with partition()
 
 ```rust
 fn main() {
@@ -3549,22 +3594,22 @@ fn main() {
 
 
 
-## x. 模块管理
+## x. Modules
 
-Rust 有许多功能可以让你管理代码的组织，包括哪些内容可以被公开，哪些内容作为私有部分，以及程序每个作用域中的名字。这些功能被称为 “模块系统（the module system）”，包括：
+Rust has many features for managing the organization of your code, including which details are exposed and which are private, and which names are in each scope of the program. Together they are called "the module system":
 
-- 包（Packages）： Cargo 的一个功能，它允许你构建、测试和分享 crate。
-- Crates ：一个模块的树形结构，它形成了库或二进制项目。
-- 模块（Modules）和 use： 允许你控制作用域和路径的私有性。
-- 路径（path）：一个命名例如结构体、函数或模块等项的方式
+- Packages: a Cargo feature that lets you build, test and share crates.
+- Crates: a tree of modules that produces a library or executable.
+- Modules and use: let you control the organization, scope and privacy of paths.
+- Paths: a way of naming an item, such as a struct, function or module
 
-### x.1. 包和 Crate
+### x.1. Packages and crates
 
-crate 是一个二进制项或者库。crate root 是一个源文件，Rust 编译器以它为起始点，并构成你的 crate 的根模块.  
-包（package） 是提供一系列功能的一个或者多个 crate。一个包会包含有一个 Cargo.toml 文件，阐述如何去构建这些 crate。  
-包中可以包含至多一个库 crate(library crate)。可以包含任意多个二进制 crate(binary crate)，但是必须至少包含一个 crate（无论是库的还是二进制的）。  
+A crate is a binary or a library. The crate root is a source file that the Rust compiler starts from and that makes up the root module of your crate.  
+A package is one or more crates that provide a set of functionality. A package contains a Cargo.toml file that describes how to build those crates.  
+A package can contain at most one library crate and any number of binary crates, but it must contain at least one crate (library or binary).  
 
-cargo new命令
+The cargo new command
 
 ```text
 $ cargo new my-project
@@ -3576,9 +3621,9 @@ $ ls my-project/src
 main.rs
 ```
 
-### x.2 定义模块来控制作用域与私有性
+### x.2 Defining modules to control scope and privacy
 
-一个包含了其他内置了函数的模块的 front_of_house 模块
+A front_of_house module containing other modules that contain functions
 
 ```rs
 mod front_of_house {
@@ -3598,7 +3643,7 @@ mod front_of_house {
 }
 ```
 
-模块树的结构。
+The structure of the module tree.
 
 ```text
 crate
@@ -3612,12 +3657,12 @@ crate
          └── take_payment
 ```
 
-路径有两种形式：
+A path takes two forms:
 
-- 绝对路径（absolute path）从 crate 根开始，以 crate 名或者字面值 crate 开头。
-- 相对路径（relative path）从当前模块开始，以 self、super 或当前模块的标识符开头。
+- An absolute path starts from the crate root, beginning with the crate name or the literal crate.
+- A relative path starts from the current module and uses self, super or an identifier in the current module.
 
-以下代码会编译失败，暂时忽略
+The following code fails to compile; ignore that for now
 
 ```rs
 mod front_of_house {
@@ -3627,15 +3672,15 @@ mod front_of_house {
 }
 
 pub fn eat_at_restaurant() {
-    // 绝对路径
+    // absolute path
     crate::front_of_house::hosting::add_to_waitlist();
 
-    // 相对路径
+    // relative path
     front_of_house::hosting::add_to_waitlist();
 }
 ```
 
-> 使用 pub 关键字暴露路径
+> Exposing paths with the pub keyword
 
 ```rs
 mod front_of_house {
@@ -3645,17 +3690,17 @@ mod front_of_house {
 }
 
 pub fn eat_at_restaurant() {
-    // 绝对路径
+    // absolute path
     crate::front_of_house::hosting::add_to_waitlist();
 
-    // 相对路径
+    // relative path
     front_of_house::hosting::add_to_waitlist();
 }
 ```
 
-> 使用 super 起始的相对路径
+> Relative paths starting with super
 
-使用 super 开头来构建从父模块开始的相对路径。这么做类似于文件系统中以 .. 开头的语法。
+Use super to build a relative path that starts from the parent module. This is like starting a filesystem path with ..
 
 ```rs
 fn serve_order() {}
@@ -3670,9 +3715,9 @@ mod back_of_house {
 }
 ```
 
-> 使用 use 关键字将路径引入作用域
+> Bringing paths into scope with the use keyword
 
-在作用域中增加 use 和路径类似于在文件系统中创建软连接（符号连接，symbolic link）。通过在 crate 根增加 use crate::front_of_house::hosting，现在 hosting 在作用域中就是有效的名称了，如同 hosting 模块被定义于 crate 根一样。通过 use 引入作用域的路径也会检查私有性，同其它路径一样。
+Adding use and a path in a scope is similar to creating a symbolic link in the filesystem. By adding use crate::front_of_house::hosting in the crate root, hosting is now a valid name in that scope, just as if the hosting module had been defined in the crate root. Paths brought into scope with use also check privacy, like any other paths.
 
 ```rs
 mod front_of_house {
@@ -3690,9 +3735,9 @@ pub fn eat_at_restaurant() {
 }
 ```
 
-> 使用 as 关键字提供新的名称
+> Providing new names with the as keyword
 
-用 as 指定一个新的本地名称或者别名
+Use as to give a new local name, or alias
 
 ```rs
 use std::fmt::Result;
@@ -3707,7 +3752,7 @@ fn function2() -> IoResult<()> {
 }
 ```
 
-### x.3 库 Package
+### x.3 Library packages
 
 ```rust
 $ cargo new my-lib --lib
@@ -3719,9 +3764,9 @@ $ ls my-lib/src
 lib.rs
 ```
 
-#### x.3.1. Package 结构
+#### x.3.1. Package layout
 
-一个真实项目中典型的 Package，会包含多个二进制包，这些包文件被放在 src/bin 目录下，每一个文件都是独立的二进制包，同时也会包含一个库包，该包只能存在一个 src/lib.rs：
+A typical package in a real project contains several binary crates, placed in the src/bin directory with each file a separate binary crate, plus a library crate, of which there can only be one: src/lib.rs:
 
 ```text
 .
@@ -3741,12 +3786,12 @@ lib.rs
     └── simple_example.rs
 ```
 
-- 唯一库包：src/lib.rs
-- 默认二进制包：src/main.rs，编译后生成的可执行文件与 Package 同名
-- 其余二进制包：src/bin/main1.rs 和 src/bin/main2.rs，它们会分别生成一个文件同名的二进制可执行文件
-- 集成测试文件：tests 目录下
-- 基准性能测试 benchmark 文件：benches 目录下
-- 项目示例：examples 目录下
+- The only library crate: src/lib.rs
+- The default binary crate: src/main.rs; the compiled executable has the same name as the package
+- Other binary crates: src/bin/main1.rs and src/bin/main2.rs, each producing an executable with the same name as its file
+- Integration tests: in the tests directory
+- Benchmarks: in the benches directory
+- Examples: in the examples directory
 
 
 

@@ -1,0 +1,90 @@
+# Production-style stack:
+#
+#   internet ──► proxy (Caddy: HTTPS, HSTS) ──► app (API + dashboard) ──► db
+#               "frontend" network               "backend" network (internal)
+#
+#   cp .env.production.example .env.production   # then fill in the secrets
+#   docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+#
+# The development database (docker-compose.yml) is separate and unaffected.
+name: sac-production
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:?set POSTGRES_DB}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    # No published ports: only the app can reach the database.
+    networks: [backend]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    image: smart-access-control:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Use a password without URL-special characters (e.g. hex).
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET (openssl rand -hex 32)}
+      METRICS_TOKEN: ${METRICS_TOKEN:-}
+      # Only the proxy below may report client addresses (login throttling).
+      TRUSTED_PROXIES: ${PROXY_IP:-10.83.83.10}
+      COOKIE_SECURE: "true"
+      SIMULATOR_ENABLED: ${SIMULATOR_ENABLED:-false}
+      RUST_LOG: ${RUST_LOG:-smart_access_control=info,tower_http=info}
+    networks: [backend, frontend]
+    # Hardening: the app writes nothing to disk and needs no privileges.
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+
+  proxy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:?set SITE_ADDRESS (your domain, or localhost)}
+      HSTS_MAX_AGE: ${HSTS_MAX_AGE:-31536000}
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+      - "${HTTPS_PORT:-443}:443/udp" # HTTP/3
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data # certificates: keep across restarts
+      - caddy-config:/config
+    networks:
+      frontend:
+        # Fixed, so the app can trust exactly this address.
+        ipv4_address: ${PROXY_IP:-10.83.83.10}
+
+networks:
+  # No route to the outside world: the database is unreachable from the
+  # proxy, and the app cannot call out.
+  backend:
+    internal: true
+  frontend:
+    ipam:
+      config:
+        # Must not overlap another Docker network on the host; PROXY_IP
+        # must lie inside it.
+        - subnet: ${PROXY_SUBNET:-10.83.83.0/24}
+
+volumes:
+  db-data:
+  caddy-data:
+  caddy-config:
