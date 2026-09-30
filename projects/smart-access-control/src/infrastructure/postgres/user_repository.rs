@@ -1,4 +1,4 @@
-use sqlx::PgPool;
+use sqlx::{PgExecutor, PgPool};
 use uuid::Uuid;
 
 use super::{expect_one_row, into_entities, map_error};
@@ -21,7 +21,7 @@ impl PgUserRepository {
 
 /// One `users` row exactly as stored. Private: only this module sees SQL shapes.
 #[derive(sqlx::FromRow)]
-pub(super) struct UserRow {
+struct UserRow {
     id: Uuid,
     name: String,
     email: String,
@@ -43,6 +43,24 @@ impl TryFrom<UserRow> for User {
             row.updated_at,
         ))
     }
+}
+
+/// Also run inside `PgAccessDataSource`'s snapshot transaction.
+pub(super) async fn user_by_id<'e>(
+    db: impl PgExecutor<'e>,
+    id: UserId,
+) -> RepositoryResult<Option<User>> {
+    let row = sqlx::query_as::<_, UserRow>(
+        "SELECT id, name, email, status, created_at, updated_at
+         FROM users WHERE id = $1",
+    )
+    .bind(id.as_uuid())
+    .fetch_optional(db)
+    .await
+    .map_err(map_error)?;
+
+    // Option<Result<T, E>> -> Result<Option<T>, E>, then `?` for the error.
+    Ok(row.map(User::try_from).transpose()?)
 }
 
 // The trait declares `fn ... -> impl Future + Send`; implementing it with
@@ -82,17 +100,7 @@ impl UserRepository for PgUserRepository {
     }
 
     async fn find_by_id(&self, id: UserId) -> RepositoryResult<Option<User>> {
-        let row = sqlx::query_as::<_, UserRow>(
-            "SELECT id, name, email, status, created_at, updated_at
-             FROM users WHERE id = $1",
-        )
-        .bind(id.as_uuid())
-        .fetch_optional(&self.pool)
-        .await
-        .map_err(map_error)?;
-
-        // Option<Result<T, E>> -> Result<Option<T>, E>, then `?` for the error.
-        Ok(row.map(User::try_from).transpose()?)
+        user_by_id(&self.pool, id).await
     }
 
     async fn find_by_email(&self, email: &Email) -> RepositoryResult<Option<User>> {

@@ -75,10 +75,7 @@ async fn list(
 ) -> Result<Json<Page<ControllerResponse>>, ApiError> {
     let page = PageRequest::from(params);
     let controllers = state.controllers.list(page).await?;
-    Ok(Json(Page::new(
-        controllers.iter().map(ControllerResponse::from).collect(),
-        page,
-    )))
+    Ok(Json(Page::of(&controllers, page)))
 }
 
 async fn get_one(
@@ -97,9 +94,8 @@ async fn register(
 ) -> Result<(StatusCode, Json<ControllerKeyResponse>), ApiError> {
     let issued = state.controllers.register(&body.controller_id).await?;
     state
-        .audit
-        .record(
-            admin.admin_id,
+        .record_audit(
+            admin,
             AuditAction::ControllerRegistered,
             &subject("controller", issued.controller.id()),
         )
@@ -114,9 +110,8 @@ async fn rotate_key(
 ) -> Result<Json<ControllerKeyResponse>, ApiError> {
     let issued = state.controllers.rotate_key(&id).await?;
     state
-        .audit
-        .record(
-            admin.admin_id,
+        .record_audit(
+            admin,
             AuditAction::ControllerKeyRotated,
             &subject("controller", issued.controller.id()),
         )

@@ -1,4 +1,4 @@
-use sqlx::PgPool;
+use sqlx::{PgExecutor, PgPool};
 use uuid::Uuid;
 
 use super::{expect_one_row, into_entities, map_error};
@@ -19,7 +19,7 @@ impl PgDoorRepository {
 }
 
 #[derive(sqlx::FromRow)]
-pub(super) struct DoorRow {
+struct DoorRow {
     id: Uuid,
     name: String,
     location: String,
@@ -41,6 +41,22 @@ impl TryFrom<DoorRow> for Door {
             row.created_at,
         ))
     }
+}
+
+/// Also run inside `PgAccessDataSource`'s snapshot transaction.
+pub(super) async fn door_by_id<'e>(
+    db: impl PgExecutor<'e>,
+    id: DoorId,
+) -> RepositoryResult<Option<Door>> {
+    let row = sqlx::query_as::<_, DoorRow>(
+        "SELECT id, name, location, controller_id, status, created_at
+         FROM doors WHERE id = $1",
+    )
+    .bind(id.as_uuid())
+    .fetch_optional(db)
+    .await
+    .map_err(map_error)?;
+    Ok(row.map(Door::try_from).transpose()?)
 }
 
 impl DoorRepository for PgDoorRepository {
@@ -78,15 +94,7 @@ impl DoorRepository for PgDoorRepository {
     }
 
     async fn find_by_id(&self, id: DoorId) -> RepositoryResult<Option<Door>> {
-        let row = sqlx::query_as::<_, DoorRow>(
-            "SELECT id, name, location, controller_id, status, created_at
-             FROM doors WHERE id = $1",
-        )
-        .bind(id.as_uuid())
-        .fetch_optional(&self.pool)
-        .await
-        .map_err(map_error)?;
-        Ok(row.map(Door::try_from).transpose()?)
+        door_by_id(&self.pool, id).await
     }
 
     async fn list(&self, page: PageRequest) -> RepositoryResult<Vec<Door>> {

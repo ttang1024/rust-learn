@@ -2,18 +2,15 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router'
 
-import { useApiMutation, useCanManage, usePage } from '../api/hooks'
+import { useApiMutation, useCanManage, usePagedList } from '../api/hooks'
 import type { AccessGroup } from '../api/types'
 import { useAuth } from '../auth/context'
 import { Button, ConfirmButton, ErrorMessage, PageHeader, Pager, Panel, Table, Td, TextField } from '../components/ui'
 
-const LIMIT = 50
-
 export function GroupsPage() {
   const { client } = useAuth()
   const canManage = useCanManage()
-  const [offset, setOffset] = useState(0)
-  const groups = usePage<AccessGroup>('access-groups', offset, LIMIT)
+  const { page: groups, pager } = usePagedList<AccessGroup>('access-groups')
   const remove = useApiMutation((id: string) => client.delete(`/access-groups/${id}`), [['access-groups'], ['permissions']])
 
   return (
@@ -42,7 +39,7 @@ export function GroupsPage() {
           </tr>
         ))}
       </Table>
-      <Pager offset={offset} limit={LIMIT} count={groups.data?.items.length ?? 0} onChange={setOffset} />
+      <Pager {...pager} />
     </>
   )
 }

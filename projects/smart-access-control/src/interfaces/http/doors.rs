@@ -82,10 +82,7 @@ async fn list(
 ) -> Result<Json<Page<DoorResponse>>, ApiError> {
     let page = PageRequest::from(params);
     let doors = state.doors.list(page).await?;
-    Ok(Json(Page::new(
-        doors.iter().map(DoorResponse::from).collect(),
-        page,
-    )))
+    Ok(Json(Page::of(&doors, page)))
 }
 
 async fn get_one(
@@ -111,12 +108,7 @@ async fn create(
         })
         .await?;
     state
-        .audit
-        .record(
-            admin.admin_id,
-            AuditAction::DoorCreated,
-            &subject("door", door.id()),
-        )
+        .record_audit(admin, AuditAction::DoorCreated, &subject("door", door.id()))
         .await;
     Ok((StatusCode::CREATED, Json(DoorResponse::from(&door))))
 }
@@ -139,12 +131,7 @@ async fn update(
         )
         .await?;
     state
-        .audit
-        .record(
-            admin.admin_id,
-            AuditAction::DoorUpdated,
-            &subject("door", door.id()),
-        )
+        .record_audit(admin, AuditAction::DoorUpdated, &subject("door", door.id()))
         .await;
     Ok(Json(DoorResponse::from(&door)))
 }
@@ -170,8 +157,7 @@ async fn set_status(
     };
     let what = format!("{} -> {}", subject("door", id), door.status().as_str());
     state
-        .audit
-        .record(admin.admin_id, AuditAction::DoorStatusChanged, &what)
+        .record_audit(admin, AuditAction::DoorStatusChanged, &what)
         .await;
     Ok(Json(DoorResponse::from(&door)))
 }

@@ -134,14 +134,6 @@ export interface AccessEvent {
   occurred_at: Timestamp
 }
 
-export interface AuditEntry {
-  id: Uuid
-  administrator_id: Uuid | null
-  action: string
-  subject: string | null
-  occurred_at: Timestamp
-}
-
 export interface Controller {
   id: string
   status: 'online' | 'offline'

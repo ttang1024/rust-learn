@@ -1,20 +1,32 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { QueryKey } from '@tanstack/react-query'
+import { useState } from 'react'
 
 import { useAuth } from '../auth/context'
 import type { Page } from './types'
 
+/** Rows per page on list screens. */
+export const PAGE_SIZE = 50
+
 /** Largest page the API serves; option lists load at most this many. */
-export const MAX_PAGE = 100
+const MAX_PAGE = 100
 
 /** GET `path` (with `?limit=&offset=`) as a paginated list. */
-export function usePage<T>(resource: string, offset = 0, limit = 50) {
+function usePage<T>(resource: string, offset = 0, limit = PAGE_SIZE) {
   const { client } = useAuth()
   return useQuery({
     queryKey: [resource, 'page', offset, limit],
     queryFn: () => client.get<Page<T>>(`/${resource}?limit=${limit}&offset=${offset}`),
     placeholderData: (previous) => previous,
   })
+}
+
+/** A list screen's current page (with its own offset) and the props for `<Pager>`. */
+export function usePagedList<T>(resource: string) {
+  const [offset, setOffset] = useState(0)
+  const page = usePage<T>(resource, offset)
+  const pager = { offset, limit: PAGE_SIZE, count: page.data?.items.length ?? 0, onChange: setOffset }
+  return { page, pager }
 }
 
 /** Up to `MAX_PAGE` items, for select boxes and name lookups. */

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 
-import { useApiMutation, useCanManage, usePage } from '../api/hooks'
+import { useApiMutation, useCanManage, usePagedList } from '../api/hooks'
 import type { Door, DoorStatus } from '../api/types'
 import { useAuth } from '../auth/context'
 import {
@@ -18,13 +18,10 @@ import {
 } from '../components/ui'
 import { formatTime } from '../lib/format'
 
-const LIMIT = 50
-
 export function DoorsPage() {
   const { client } = useAuth()
   const canManage = useCanManage()
-  const [offset, setOffset] = useState(0)
-  const doors = usePage<Door>('doors', offset, LIMIT)
+  const { page: doors, pager } = usePagedList<Door>('doors')
   const setStatus = useApiMutation(
     ({ id, status }: { id: string; status: DoorStatus }) => client.patch(`/doors/${id}/status`, { status }),
     [['doors']],
@@ -65,7 +62,7 @@ export function DoorsPage() {
           </tr>
         ))}
       </Table>
-      <Pager offset={offset} limit={LIMIT} count={doors.data?.items.length ?? 0} onChange={setOffset} />
+      <Pager {...pager} />
     </>
   )
 }

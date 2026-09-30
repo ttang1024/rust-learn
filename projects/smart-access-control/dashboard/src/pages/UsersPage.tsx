@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router'
 
-import { useApiMutation, useCanManage, usePage } from '../api/hooks'
+import { useApiMutation, useCanManage, usePagedList } from '../api/hooks'
 import type { User } from '../api/types'
 import { useAuth } from '../auth/context'
 import {
@@ -19,13 +19,10 @@ import {
 } from '../components/ui'
 import { formatTime } from '../lib/format'
 
-const LIMIT = 50
-
 export function UsersPage() {
   const { client } = useAuth()
   const canManage = useCanManage()
-  const [offset, setOffset] = useState(0)
-  const users = usePage<User>('users', offset, LIMIT)
+  const { page: users, pager } = usePagedList<User>('users')
   const setStatus = useApiMutation(
     ({ id, status }: { id: string; status: User['status'] }) =>
       status === 'archived' ? client.delete(`/users/${id}`) : client.patch(`/users/${id}`, { status }),
@@ -63,7 +60,7 @@ export function UsersPage() {
           </tr>
         ))}
       </Table>
-      <Pager offset={offset} limit={LIMIT} count={users.data?.items.length ?? 0} onChange={setOffset} />
+      <Pager {...pager} />
     </>
   )
 }

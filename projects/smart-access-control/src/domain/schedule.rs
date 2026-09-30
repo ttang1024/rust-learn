@@ -31,7 +31,6 @@ pub struct DaySet(u8);
 
 impl DaySet {
     pub const WEEKDAYS: Self = Self(0b001_1111);
-    pub const WEEKEND: Self = Self(0b110_0000);
     pub const EVERY_DAY: Self = Self(0b111_1111);
 
     pub fn from_days(days: impl IntoIterator<Item = Weekday>) -> Result<Self, DomainError> {

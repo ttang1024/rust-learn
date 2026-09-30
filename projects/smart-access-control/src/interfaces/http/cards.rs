@@ -126,12 +126,7 @@ async fn issue(
         })
         .await?;
     state
-        .audit
-        .record(
-            admin.admin_id,
-            AuditAction::CardIssued,
-            &subject("card", card.id()),
-        )
+        .record_audit(admin, AuditAction::CardIssued, &subject("card", card.id()))
         .await;
     Ok((
         StatusCode::CREATED,
@@ -161,8 +156,7 @@ async fn update(
         }
     };
     state
-        .audit
-        .record(admin.admin_id, action, &subject("card", id))
+        .record_audit(admin, action, &subject("card", id))
         .await;
     Ok(Json(CardResponse::new(&card, state.clock.now())))
 }
@@ -174,12 +168,7 @@ async fn revoke(
 ) -> Result<Json<CardResponse>, ApiError> {
     let card = state.cards.revoke(CardId::from_uuid(id)).await?;
     state
-        .audit
-        .record(
-            admin.admin_id,
-            AuditAction::CardRevoked,
-            &subject("card", card.id()),
-        )
+        .record_audit(admin, AuditAction::CardRevoked, &subject("card", card.id()))
         .await;
     Ok(Json(CardResponse::new(&card, state.clock.now())))
 }

@@ -81,10 +81,7 @@ async fn list(
 ) -> Result<Json<Page<GroupResponse>>, ApiError> {
     let page = PageRequest::from(params);
     let groups = state.groups.list(page).await?;
-    Ok(Json(Page::new(
-        groups.iter().map(GroupResponse::from).collect(),
-        page,
-    )))
+    Ok(Json(Page::of(&groups, page)))
 }
 
 async fn get_one(
@@ -109,9 +106,8 @@ async fn create(
         })
         .await?;
     state
-        .audit
-        .record(
-            admin.admin_id,
+        .record_audit(
+            admin,
             AuditAction::AccessGroupCreated,
             &subject("access_group", group.id()),
         )
@@ -136,9 +132,8 @@ async fn update(
         )
         .await?;
     state
-        .audit
-        .record(
-            admin.admin_id,
+        .record_audit(
+            admin,
             AuditAction::AccessGroupUpdated,
             &subject("access_group", group.id()),
         )
@@ -155,9 +150,8 @@ async fn remove(
     let id = AccessGroupId::from_uuid(id);
     state.groups.delete(id).await?;
     state
-        .audit
-        .record(
-            admin.admin_id,
+        .record_audit(
+            admin,
             AuditAction::AccessGroupDeleted,
             &subject("access_group", id),
         )
@@ -198,8 +192,7 @@ async fn add_member(
         subject("user", user_id)
     );
     state
-        .audit
-        .record(admin.admin_id, AuditAction::GroupMemberAdded, &what)
+        .record_audit(admin, AuditAction::GroupMemberAdded, &what)
         .await;
     Ok(StatusCode::NO_CONTENT)
 }
@@ -217,8 +210,7 @@ async fn remove_member(
         subject("user", user_id)
     );
     state
-        .audit
-        .record(admin.admin_id, AuditAction::GroupMemberRemoved, &what)
+        .record_audit(admin, AuditAction::GroupMemberRemoved, &what)
         .await;
     Ok(StatusCode::NO_CONTENT)
 }

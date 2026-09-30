@@ -11,14 +11,15 @@ use tokio::sync::{Semaphore, watch};
 
 use crate::{
     application::{
-        AccessDecisionService, AccessEventService, AccessGroupService, AuditTrail, AuthService,
-        BoxError, CardService, Clock, ControllerService, DoorService, LoginThrottle,
+        AccessClaims, AccessDecisionService, AccessEventService, AccessGroupService, AuditTrail,
+        AuthService, BoxError, CardService, Clock, ControllerService, DoorService, LoginThrottle,
         PermissionService, ScheduleService, ThrottlePolicy, UserService,
     },
     config::{
         AuthConfig, DEFAULT_CONTROLLER_TIMEOUT_SECONDS, DEFAULT_WS_MAX_CONNECTIONS, MetricsToken,
         TrustedProxies,
     },
+    domain::AuditAction,
     infrastructure::{
         auth::{Argon2PasswordHasher, JwtTokenIssuer, RandomSecrets},
         event_hub::BroadcastEventHub,
@@ -111,6 +112,11 @@ impl Deref for AppState {
 }
 
 impl AppState {
+    /// Records that `admin` completed `action` on `subject` (see `subject()`).
+    pub async fn record_audit(&self, admin: AccessClaims, action: AuditAction, subject: &str) {
+        self.audit.record(admin.admin_id, action, subject).await;
+    }
+
     /// Tells long-lived connections to close. Idempotent.
     pub fn begin_shutdown(&self) {
         self.shutdown.send_replace(true);

@@ -152,9 +152,9 @@ rust-learn/
 
 | 目录 | 主题 | 示例 | 相关笔记 |
 | ---- | ---- | ---- | -------- |
-| [`01-basics`](examples/01-basics) | 基础：格式化输出、枚举与 `impl` | [`format-demo`](examples/01-basics/format-demo)、[`impl-demo`](examples/01-basics/impl-demo)、[`type-demo`](examples/01-basics/type-demo) | [3. 基础语法](#3-基础语法)、[16. 方法](#16-方法-method) |
-| [`02-collections`](examples/02-collections) | 集合与链表 | [`vec-demo`](examples/02-collections/vec-demo)、[`hashmap-demo`](examples/02-collections/hashmap-demo)、[`hashset-demo`](examples/02-collections/hashset-demo)、[`lists`](examples/02-collections/lists)、[`linked_list`](examples/02-collections/linked_list)、[`reverse_list_demo`](examples/02-collections/reverse_list_demo) | [13. Vector](#13-动态数组-vector)、[14. HashMap](#14-hashmap) |
-| [`03-modules`](examples/03-modules) | 模块与库 | [`mod-demo`](examples/03-modules/mod-demo)、[`module-demo`](examples/03-modules/module-demo)、[`my-lib`](examples/03-modules/my-lib) | [x. 模块管理](#x-模块管理) |
+| [`01-basics`](examples/01-basics) | 基础：格式化输出、枚举与 `impl` | [`format-demo`](examples/01-basics/format-demo)、[`impl-demo`](examples/01-basics/impl-demo) | [3. 基础语法](#3-基础语法)、[16. 方法](#16-方法-method) |
+| [`02-collections`](examples/02-collections) | 集合与链表 | [`vec-demo`](examples/02-collections/vec-demo)、[`hashmap-demo`](examples/02-collections/hashmap-demo)、[`hashset-demo`](examples/02-collections/hashset-demo)、[`linked_list`](examples/02-collections/linked_list)、[`reverse_list_demo`](examples/02-collections/reverse_list_demo) | [13. Vector](#13-动态数组-vector)、[14. HashMap](#14-hashmap) |
+| [`03-modules`](examples/03-modules) | 模块 | [`module-demo`](examples/03-modules/module-demo) | [x. 模块管理](#x-模块管理) |
 | [`04-errors`](examples/04-errors) | 错误处理：`Result`、自定义错误 | [`error_demo`](examples/04-errors/error_demo)、[`result-demo`](examples/04-errors/result-demo) | [18. 错误处理](#18-错误处理) |
 | [`05-generics-traits`](examples/05-generics-traits) | 泛型、特征、特征对象、生命周期 | [`genericity_demo`](examples/05-generics-traits/genericity_demo)、[`trait-demo`](examples/05-generics-traits/trait-demo)、[`trait-object`](examples/05-generics-traits/trait-object)、[`lifetime-demo`](examples/05-generics-traits/lifetime-demo) | [12. 泛型和特征](#12-泛型和特征)、[15. 生命周期](#15-生命周期) |
 | [`06-smart-pointers`](examples/06-smart-pointers) | 智能指针：`Box`、`Arc` | [`mut-demo`](examples/06-smart-pointers/mut-demo)、[`rc-demo`](examples/06-smart-pointers/rc-demo) | — |

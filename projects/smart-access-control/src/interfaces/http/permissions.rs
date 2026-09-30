@@ -63,10 +63,7 @@ async fn list(
 ) -> Result<Json<Page<PermissionResponse>>, ApiError> {
     let page = PageRequest::from(params);
     let permissions = state.permissions.list(page).await?;
-    Ok(Json(Page::new(
-        permissions.iter().map(PermissionResponse::from).collect(),
-        page,
-    )))
+    Ok(Json(Page::of(&permissions, page)))
 }
 
 async fn grant(
@@ -83,9 +80,8 @@ async fn grant(
         })
         .await?;
     state
-        .audit
-        .record(
-            admin.admin_id,
+        .record_audit(
+            admin,
             AuditAction::PermissionGranted,
             &subject("permission", permission.id()),
         )
@@ -104,9 +100,8 @@ async fn revoke(
     let id = PermissionId::from_uuid(id);
     state.permissions.revoke(id).await?;
     state
-        .audit
-        .record(
-            admin.admin_id,
+        .record_audit(
+            admin,
             AuditAction::PermissionRevoked,
             &subject("permission", id),
         )

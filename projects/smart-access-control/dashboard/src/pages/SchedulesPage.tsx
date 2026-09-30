@@ -1,19 +1,16 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 
-import { useApiMutation, useCanManage, usePage } from '../api/hooks'
+import { useApiMutation, useCanManage, usePagedList } from '../api/hooks'
 import type { Schedule, ScheduleRule, Weekday } from '../api/types'
 import { useAuth } from '../auth/context'
 import { Button, ErrorMessage, PageHeader, Pager, Panel, Table, Td, TextField } from '../components/ui'
 import { describeRule } from '../lib/format'
-
-const LIMIT = 50
 const WEEK: Weekday[] = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
 
 export function SchedulesPage() {
   const canManage = useCanManage()
-  const [offset, setOffset] = useState(0)
-  const schedules = usePage<Schedule>('schedules', offset, LIMIT)
+  const { page: schedules, pager } = usePagedList<Schedule>('schedules')
 
   return (
     <>
@@ -38,7 +35,7 @@ export function SchedulesPage() {
           </tr>
         ))}
       </Table>
-      <Pager offset={offset} limit={LIMIT} count={schedules.data?.items.length ?? 0} onChange={setOffset} />
+      <Pager {...pager} />
     </>
   )
 }

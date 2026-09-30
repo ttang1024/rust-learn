@@ -133,10 +133,7 @@ async fn list(
 ) -> Result<Json<Page<ScheduleResponse>>, ApiError> {
     let page = PageRequest::from(params);
     let schedules = state.schedules.list(page).await?;
-    Ok(Json(Page::new(
-        schedules.iter().map(ScheduleResponse::from).collect(),
-        page,
-    )))
+    Ok(Json(Page::of(&schedules, page)))
 }
 
 async fn get_one(
@@ -169,9 +166,8 @@ async fn create(
         })
         .await?;
     state
-        .audit
-        .record(
-            admin.admin_id,
+        .record_audit(
+            admin,
             AuditAction::ScheduleCreated,
             &subject("schedule", schedule.id()),
         )

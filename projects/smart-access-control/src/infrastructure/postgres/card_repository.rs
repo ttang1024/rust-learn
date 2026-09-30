@@ -1,4 +1,4 @@
-use sqlx::PgPool;
+use sqlx::{PgExecutor, PgPool};
 use uuid::Uuid;
 
 use super::{expect_one_row, into_entities, map_error};
@@ -19,7 +19,7 @@ impl PgCardRepository {
 }
 
 #[derive(sqlx::FromRow)]
-pub(super) struct CardRow {
+struct CardRow {
     id: Uuid,
     user_id: Uuid,
     card_number: String,
@@ -41,6 +41,22 @@ impl TryFrom<CardRow> for AccessCard {
             row.expires_at,
         ))
     }
+}
+
+/// Also run inside `PgAccessDataSource`'s snapshot transaction.
+pub(super) async fn card_by_number<'e>(
+    db: impl PgExecutor<'e>,
+    number: &CardNumber,
+) -> RepositoryResult<Option<AccessCard>> {
+    let row = sqlx::query_as::<_, CardRow>(
+        "SELECT id, user_id, card_number, status, issued_at, expires_at
+         FROM access_cards WHERE card_number = $1",
+    )
+    .bind(number.as_str())
+    .fetch_optional(db)
+    .await
+    .map_err(map_error)?;
+    Ok(row.map(AccessCard::try_from).transpose()?)
 }
 
 impl CardRepository for PgCardRepository {
@@ -85,15 +101,7 @@ impl CardRepository for PgCardRepository {
     }
 
     async fn find_by_number(&self, number: &CardNumber) -> RepositoryResult<Option<AccessCard>> {
-        let row = sqlx::query_as::<_, CardRow>(
-            "SELECT id, user_id, card_number, status, issued_at, expires_at
-             FROM access_cards WHERE card_number = $1",
-        )
-        .bind(number.as_str())
-        .fetch_optional(&self.pool)
-        .await
-        .map_err(map_error)?;
-        Ok(row.map(AccessCard::try_from).transpose()?)
+        card_by_number(&self.pool, number).await
     }
 
     async fn list(&self, page: PageRequest) -> RepositoryResult<Vec<AccessCard>> {

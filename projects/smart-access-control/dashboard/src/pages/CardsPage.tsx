@@ -3,7 +3,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router'
 
-import { byId, useApiMutation, useCanManage, useOptions } from '../api/hooks'
+import { PAGE_SIZE, byId, useApiMutation, useCanManage, useOptions } from '../api/hooks'
 import type { Card, Page, User } from '../api/types'
 import { useAuth } from '../auth/context'
 import {
@@ -21,7 +21,6 @@ import {
 } from '../components/ui'
 import { formatTime } from '../lib/format'
 
-const LIMIT = 50
 
 export function CardsPage() {
   const { client } = useAuth()
@@ -36,7 +35,7 @@ export function CardsPage() {
     queryKey: ['cards', userFilter, offset],
     queryFn: () =>
       client.get<Page<Card>>(
-        userFilter ? `/cards?user_id=${userFilter}` : `/cards?limit=${LIMIT}&offset=${offset}`,
+        userFilter ? `/cards?user_id=${userFilter}` : `/cards?limit=${PAGE_SIZE}&offset=${offset}`,
       ),
   })
   const change = useApiMutation(
@@ -82,7 +81,7 @@ export function CardsPage() {
           </tr>
         ))}
       </Table>
-      {!userFilter && <Pager offset={offset} limit={LIMIT} count={cards.data?.items.length ?? 0} onChange={setOffset} />}
+      {!userFilter && <Pager offset={offset} limit={PAGE_SIZE} count={cards.data?.items.length ?? 0} onChange={setOffset} />}
     </>
   )
 }

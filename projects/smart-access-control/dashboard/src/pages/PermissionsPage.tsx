@@ -1,19 +1,16 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 
-import { byId, useApiMutation, useCanManage, useOptions, usePage } from '../api/hooks'
+import { byId, useApiMutation, useCanManage, useOptions, usePagedList } from '../api/hooks'
 import type { AccessGroup, Door, Permission, Schedule } from '../api/types'
 import { useAuth } from '../auth/context'
 import { Button, ConfirmButton, ErrorMessage, PageHeader, Pager, Panel, SelectField, Table, Td } from '../components/ui'
 import { formatTime } from '../lib/format'
 
-const LIMIT = 50
-
 export function PermissionsPage() {
   const { client } = useAuth()
   const canManage = useCanManage()
-  const [offset, setOffset] = useState(0)
-  const permissions = usePage<Permission>('permissions', offset, LIMIT)
+  const { page: permissions, pager } = usePagedList<Permission>('permissions')
   const groups = useOptions<AccessGroup>('access-groups')
   const doors = useOptions<Door>('doors')
   const schedules = useOptions<Schedule>('schedules')
@@ -45,7 +42,7 @@ export function PermissionsPage() {
           </tr>
         ))}
       </Table>
-      <Pager offset={offset} limit={LIMIT} count={permissions.data?.items.length ?? 0} onChange={setOffset} />
+      <Pager {...pager} />
     </>
   )
 }

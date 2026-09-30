@@ -182,10 +182,7 @@ async fn list(
     }
     .into_filter()?;
     let events = state.events.list(&filter, page).await?;
-    Ok(Json(Page::new(
-        events.iter().map(EventResponse::from).collect(),
-        page,
-    )))
+    Ok(Json(Page::of(&events, page)))
 }
 
 async fn recent(
@@ -234,8 +231,5 @@ async fn audit_log(
 ) -> Result<Json<Page<AuditEntryResponse>>, ApiError> {
     let page = PageRequest::from(params);
     let entries = state.audit.list_recent(page).await?;
-    Ok(Json(Page::new(
-        entries.iter().map(AuditEntryResponse::from).collect(),
-        page,
-    )))
+    Ok(Json(Page::of(&entries, page)))
 }

@@ -1,14 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router'
 
-import { useOptions } from '../api/hooks'
+import { PAGE_SIZE, useOptions } from '../api/hooks'
 import type { AccessEvent, Door, Page, User } from '../api/types'
 import { useAuth } from '../auth/context'
 import { EventTable } from '../components/EventTable'
 import { Button, ErrorMessage, PageHeader, Pager, SelectField, TextField } from '../components/ui'
 import { DENIAL_REASONS, humanize } from '../lib/events'
 
-const LIMIT = 50
 const FILTERS = ['door_id', 'user_id', 'decision', 'reason', 'from', 'until'] as const
 
 /**
@@ -28,7 +27,7 @@ export function EventsPage() {
     // <input type="datetime-local"> gives local time; the API wants RFC 3339.
     if (value) query.set(key, key === 'from' || key === 'until' ? new Date(value).toISOString() : value)
   }
-  query.set('limit', String(LIMIT))
+  query.set('limit', String(PAGE_SIZE))
   query.set('offset', String(offset))
 
   const events = useQuery({
@@ -87,7 +86,7 @@ export function EventsPage() {
       <EventTable events={events.data?.items ?? []} />
       <Pager
         offset={offset}
-        limit={LIMIT}
+        limit={PAGE_SIZE}
         count={events.data?.items.length ?? 0}
         onChange={(next) => {
           const updated = new URLSearchParams(params)

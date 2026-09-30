@@ -65,10 +65,7 @@ async fn list(
 ) -> Result<Json<Page<UserResponse>>, ApiError> {
     let page = PageRequest::from(params);
     let users = state.users.list(page).await?;
-    Ok(Json(Page::new(
-        users.iter().map(UserResponse::from).collect(),
-        page,
-    )))
+    Ok(Json(Page::of(&users, page)))
 }
 
 async fn get_one(
@@ -93,9 +90,8 @@ async fn create(
         })
         .await?;
     state
-        .audit
-        .record(
-            admin.admin_id,
+        .record_audit(
+            admin,
             AuditAction::UserRegistered,
             &subject("user", user.id()),
         )
@@ -132,8 +128,7 @@ async fn update(
             )
             .await?;
         state
-            .audit
-            .record(admin.admin_id, AuditAction::UserUpdated, &who)
+            .record_audit(admin, AuditAction::UserUpdated, &who)
             .await;
         user
     } else {
@@ -158,7 +153,7 @@ async fn update(
                 AuditAction::UserArchived
             }
         };
-        state.audit.record(admin.admin_id, action, &who).await;
+        state.record_audit(admin, action, &who).await;
     }
     Ok(Json(UserResponse::from(&user)))
 }
@@ -171,9 +166,8 @@ async fn archive(
 ) -> Result<StatusCode, ApiError> {
     let user = state.users.archive(UserId::from_uuid(id)).await?;
     state
-        .audit
-        .record(
-            admin.admin_id,
+        .record_audit(
+            admin,
             AuditAction::UserArchived,
             &subject("user", user.id()),
         )

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 
-import { useApiMutation, useCanManage, usePage } from '../api/hooks'
+import { useApiMutation, useCanManage, usePagedList } from '../api/hooks'
 import type { Controller } from '../api/types'
 import { useAuth } from '../auth/context'
 import {
@@ -18,8 +18,6 @@ import {
 } from '../components/ui'
 import { formatTime } from '../lib/format'
 
-const LIMIT = 50
-
 interface IssuedKey {
   controller: Controller
   key: string
@@ -28,10 +26,9 @@ interface IssuedKey {
 export function ControllersPage() {
   const { client } = useAuth()
   const canManage = useCanManage()
-  const [offset, setOffset] = useState(0)
   // Only ever in component state: a key is shown once and never refetched.
   const [issued, setIssued] = useState<IssuedKey | null>(null)
-  const controllers = usePage<Controller>('controllers', offset, LIMIT)
+  const { page: controllers, pager } = usePagedList<Controller>('controllers')
   const rotate = useApiMutation(
     (id: string) => client.post<IssuedKey>(`/controllers/${id}/rotate-key`),
     [['controllers']],
@@ -68,7 +65,7 @@ export function ControllersPage() {
           </tr>
         ))}
       </Table>
-      <Pager offset={offset} limit={LIMIT} count={controllers.data?.items.length ?? 0} onChange={setOffset} />
+      <Pager {...pager} />
     </>
   )
 }

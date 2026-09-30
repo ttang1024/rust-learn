@@ -89,6 +89,14 @@ impl<T> Page<T> {
             offset: page.offset(),
         }
     }
+
+    /// Converts each entity into its response type.
+    pub fn of<'a, E>(entities: &'a [E], page: PageRequest) -> Self
+    where
+        T: From<&'a E>,
+    {
+        Self::new(entities.iter().map(T::from).collect(), page)
+    }
 }
 
 /// Distinguishes an absent field from an explicit `null` in PATCH bodies.

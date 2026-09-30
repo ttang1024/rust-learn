@@ -4,13 +4,13 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 use super::{
-    card_repository::CardRow, door_repository::DoorRow, map_error,
+    card_repository::card_by_number, door_repository::door_by_id, map_error,
     permission_repository::PermissionRow, schedule_repository::schedules_by_ids,
-    user_repository::UserRow,
+    user_repository::user_by_id,
 };
 use crate::{
     application::{AccessDataSource, AccessSnapshot, RepositoryResult},
-    domain::{AccessCard, AccessGroupId, AccessPermission, CardNumber, Door, DoorId, User},
+    domain::{AccessGroupId, AccessPermission, CardNumber, DoorId},
 };
 
 #[derive(Debug, Clone)]
@@ -41,43 +41,14 @@ impl AccessDataSource for PgAccessDataSource {
             .map_err(map_error)?;
 
         let card = match card_number {
-            Some(number) => sqlx::query_as::<_, CardRow>(
-                "SELECT id, user_id, card_number, status, issued_at, expires_at
-                 FROM access_cards WHERE card_number = $1",
-            )
-            .bind(number.as_str())
-            .fetch_optional(&mut *tx)
-            .await
-            .map_err(map_error)?
-            .map(AccessCard::try_from)
-            .transpose()?,
+            Some(number) => card_by_number(&mut *tx, number).await?,
             None => None,
         };
-
         let holder = match &card {
-            Some(card) => sqlx::query_as::<_, UserRow>(
-                "SELECT id, name, email, status, created_at, updated_at
-                 FROM users WHERE id = $1",
-            )
-            .bind(card.user_id().as_uuid())
-            .fetch_optional(&mut *tx)
-            .await
-            .map_err(map_error)?
-            .map(User::try_from)
-            .transpose()?,
+            Some(card) => user_by_id(&mut *tx, card.user_id()).await?,
             None => None,
         };
-
-        let door = sqlx::query_as::<_, DoorRow>(
-            "SELECT id, name, location, controller_id, status, created_at
-             FROM doors WHERE id = $1",
-        )
-        .bind(door_id.as_uuid())
-        .fetch_optional(&mut *tx)
-        .await
-        .map_err(map_error)?
-        .map(Door::try_from)
-        .transpose()?;
+        let door = door_by_id(&mut *tx, door_id).await?;
 
         let group_ids: Vec<Uuid> = match &holder {
             Some(holder) => {
