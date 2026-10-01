@@ -46,17 +46,21 @@ export function DoorsPage() {
             </Td>
             <Td className="text-slate-500">{formatTime(door.created_at)}</Td>
             <Td className="space-x-2 text-right whitespace-nowrap">
-              {canManage && door.status === 'disabled' && (
-                <Button onClick={() => setStatus.mutate({ id: door.id, status: 'offline' })}>Enable</Button>
-              )}
-              {canManage && door.status === 'offline' && (
-                <Button onClick={() => setStatus.mutate({ id: door.id, status: 'online' })}>Bring online</Button>
-              )}
-              {canManage && door.status === 'online' && (
-                <Button onClick={() => setStatus.mutate({ id: door.id, status: 'offline' })}>Take offline</Button>
-              )}
-              {canManage && door.status !== 'disabled' && (
-                <ConfirmButton label="Disable" onConfirm={() => setStatus.mutate({ id: door.id, status: 'disabled' })} />
+              {canManage && (
+                <>
+                  {door.status === 'disabled' && (
+                    <Button onClick={() => setStatus.mutate({ id: door.id, status: 'offline' })}>Enable</Button>
+                  )}
+                  {door.status === 'offline' && (
+                    <Button onClick={() => setStatus.mutate({ id: door.id, status: 'online' })}>Bring online</Button>
+                  )}
+                  {door.status === 'online' && (
+                    <Button onClick={() => setStatus.mutate({ id: door.id, status: 'offline' })}>Take offline</Button>
+                  )}
+                  {door.status !== 'disabled' && (
+                    <ConfirmButton label="Disable" onConfirm={() => setStatus.mutate({ id: door.id, status: 'disabled' })} />
+                  )}
+                </>
               )}
             </Td>
           </tr>
@@ -89,9 +93,7 @@ function CreateDoorForm() {
           Add
         </Button>
       </form>
-      <div className="mt-3">
-        <ErrorMessage error={create.error} />
-      </div>
+      <ErrorMessage className="mt-3" error={create.error} />
     </Panel>
   )
 }

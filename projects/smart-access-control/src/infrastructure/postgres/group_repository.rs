@@ -1,7 +1,7 @@
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use super::{expect_one_row, into_entities, map_error};
+use super::{expect_one_row, into_entities, into_entity, map_error};
 use crate::{
     application::{AccessGroupRepository, PageRequest, RepositoryResult},
     domain::{AccessGroup, AccessGroupId, Description, DomainError, GroupName, UserId},
@@ -82,7 +82,7 @@ impl AccessGroupRepository for PgAccessGroupRepository {
         .fetch_optional(&self.pool)
         .await
         .map_err(map_error)?;
-        Ok(row.map(AccessGroup::try_from).transpose()?)
+        into_entity(row)
     }
 
     async fn list(&self, page: PageRequest) -> RepositoryResult<Vec<AccessGroup>> {

@@ -167,10 +167,10 @@ where
     type Rejection = ApiError;
 
     async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
-        match Json::<T>::from_request(req, state).await {
-            Ok(Json(value)) => Ok(Self(value)),
-            Err(rejection) => Err(json_rejection(rejection)),
-        }
+        Json::<T>::from_request(req, state)
+            .await
+            .map(|Json(value)| Self(value))
+            .map_err(json_rejection)
     }
 }
 

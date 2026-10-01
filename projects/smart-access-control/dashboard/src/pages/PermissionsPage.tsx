@@ -93,9 +93,7 @@ function GrantForm({ groups, doors, schedules }: { groups: AccessGroup[]; doors:
           Grant
         </Button>
       </form>
-      <div className="mt-3">
-        <ErrorMessage error={grant.error} />
-      </div>
+      <ErrorMessage className="mt-3" error={grant.error} />
     </Panel>
   )
 }

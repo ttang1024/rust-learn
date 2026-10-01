@@ -1,7 +1,7 @@
 use sqlx::{PgExecutor, PgPool};
 use uuid::Uuid;
 
-use super::{expect_one_row, into_entities, map_error};
+use super::{expect_one_row, into_entities, into_entity, map_error};
 use crate::{
     application::{CardRepository, PageRequest, RepositoryResult},
     domain::{AccessCard, CardId, CardNumber, DomainError, Timestamp, UserId},
@@ -56,7 +56,7 @@ pub(super) async fn card_by_number<'e>(
     .fetch_optional(db)
     .await
     .map_err(map_error)?;
-    Ok(row.map(AccessCard::try_from).transpose()?)
+    into_entity(row)
 }
 
 impl CardRepository for PgCardRepository {
@@ -97,7 +97,7 @@ impl CardRepository for PgCardRepository {
         .fetch_optional(&self.pool)
         .await
         .map_err(map_error)?;
-        Ok(row.map(AccessCard::try_from).transpose()?)
+        into_entity(row)
     }
 
     async fn find_by_number(&self, number: &CardNumber) -> RepositoryResult<Option<AccessCard>> {

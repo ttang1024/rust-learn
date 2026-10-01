@@ -47,14 +47,18 @@ export function UsersPage() {
               <Link className="text-sm text-slate-600 underline" to={`/cards?user=${user.id}`}>
                 Cards
               </Link>
-              {canManage && user.status === 'active' && (
-                <Button onClick={() => setStatus.mutate({ id: user.id, status: 'suspended' })}>Suspend</Button>
-              )}
-              {canManage && user.status === 'suspended' && (
-                <Button onClick={() => setStatus.mutate({ id: user.id, status: 'active' })}>Reactivate</Button>
-              )}
-              {canManage && user.status !== 'archived' && (
-                <ConfirmButton label="Archive" onConfirm={() => setStatus.mutate({ id: user.id, status: 'archived' })} />
+              {canManage && (
+                <>
+                  {user.status === 'active' && (
+                    <Button onClick={() => setStatus.mutate({ id: user.id, status: 'suspended' })}>Suspend</Button>
+                  )}
+                  {user.status === 'suspended' && (
+                    <Button onClick={() => setStatus.mutate({ id: user.id, status: 'active' })}>Reactivate</Button>
+                  )}
+                  {user.status !== 'archived' && (
+                    <ConfirmButton label="Archive" onConfirm={() => setStatus.mutate({ id: user.id, status: 'archived' })} />
+                  )}
+                </>
               )}
             </Td>
           </tr>
@@ -93,9 +97,7 @@ function CreateUserForm() {
           Register
         </Button>
       </form>
-      <div className="mt-3">
-        <ErrorMessage error={create.error} />
-      </div>
+      <ErrorMessage className="mt-3" error={create.error} />
     </Panel>
   )
 }

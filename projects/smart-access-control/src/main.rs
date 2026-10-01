@@ -128,13 +128,11 @@ async fn create_admin(config: AppConfig, username: String, role: Role) -> ExitCo
         std::io::stdin().read_line(&mut line).map(|_| line)
     })
     .await;
-    let password = match password {
-        Ok(Ok(line)) => line.trim_end_matches(['\r', '\n']).to_owned(),
-        _ => {
-            eprintln!("error: could not read the password from stdin");
-            return ExitCode::FAILURE;
-        }
+    let Ok(Ok(line)) = password else {
+        eprintln!("error: could not read the password from stdin");
+        return ExitCode::FAILURE;
     };
+    let password = line.trim_end_matches(['\r', '\n']).to_owned();
 
     let cmd = CreateAdministrator {
         username,

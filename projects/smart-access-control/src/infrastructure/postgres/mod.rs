@@ -146,6 +146,16 @@ fn expect_one_row(result: PgQueryResult, entity: &'static str) -> RepositoryResu
     Ok(())
 }
 
+/// Converts an optional database row into a domain entity, re-validating
+/// every field.
+fn into_entity<R, T>(row: Option<R>) -> RepositoryResult<Option<T>>
+where
+    T: TryFrom<R, Error = DomainError>,
+{
+    // Option<Result<T, E>> -> Result<Option<T>, E>, then `?` for the error.
+    Ok(row.map(T::try_from).transpose()?)
+}
+
 /// Converts database rows into domain entities, re-validating every field.
 ///
 /// Generic over the row type `R` and entity `T`: any pair connected by a

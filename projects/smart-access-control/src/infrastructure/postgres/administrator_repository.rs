@@ -1,7 +1,7 @@
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use super::map_error;
+use super::{into_entity, map_error};
 use crate::{
     application::{AdministratorRepository, RepositoryResult},
     domain::{Administrator, AdministratorId, DomainError, PasswordHash, Timestamp, Username},
@@ -70,7 +70,7 @@ impl AdministratorRepository for PgAdministratorRepository {
         .fetch_optional(&self.pool)
         .await
         .map_err(map_error)?;
-        Ok(row.map(Administrator::try_from).transpose()?)
+        into_entity(row)
     }
 
     async fn find_by_username(
@@ -85,6 +85,6 @@ impl AdministratorRepository for PgAdministratorRepository {
         .fetch_optional(&self.pool)
         .await
         .map_err(map_error)?;
-        Ok(row.map(Administrator::try_from).transpose()?)
+        into_entity(row)
     }
 }

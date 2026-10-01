@@ -100,7 +100,7 @@ export function SelectField({
 
 /** Shows an API error the way the backend phrased it (validation messages
  * are written for people). */
-export function ErrorMessage({ error }: { error: unknown }) {
+export function ErrorMessage({ error, className = '' }: { error: unknown; className?: string }) {
   if (!error) return null
   const message =
     error instanceof ApiError
@@ -109,7 +109,7 @@ export function ErrorMessage({ error }: { error: unknown }) {
         : error.message
       : 'Something went wrong. Please try again.'
   return (
-    <p role="alert" className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
+    <p role="alert" className={`rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 ${className}`}>
       {message}
     </p>
   )

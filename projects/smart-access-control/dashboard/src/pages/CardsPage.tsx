@@ -68,14 +68,18 @@ export function CardsPage() {
             <Td className="text-slate-500">{formatTime(card.issued_at)}</Td>
             <Td className="text-slate-500">{formatTime(card.expires_at)}</Td>
             <Td className="space-x-2 text-right whitespace-nowrap">
-              {canManage && card.status === 'active' && (
-                <Button onClick={() => change.mutate({ id: card.id, action: 'suspend' })}>Suspend</Button>
-              )}
-              {canManage && card.status === 'suspended' && (
-                <Button onClick={() => change.mutate({ id: card.id, action: 'reactivate' })}>Reactivate</Button>
-              )}
-              {canManage && card.status !== 'revoked' && (
-                <ConfirmButton label="Revoke" confirmLabel="Revoke permanently?" onConfirm={() => change.mutate({ id: card.id, action: 'revoke' })} />
+              {canManage && (
+                <>
+                  {card.status === 'active' && (
+                    <Button onClick={() => change.mutate({ id: card.id, action: 'suspend' })}>Suspend</Button>
+                  )}
+                  {card.status === 'suspended' && (
+                    <Button onClick={() => change.mutate({ id: card.id, action: 'reactivate' })}>Reactivate</Button>
+                  )}
+                  {card.status !== 'revoked' && (
+                    <ConfirmButton label="Revoke" confirmLabel="Revoke permanently?" onConfirm={() => change.mutate({ id: card.id, action: 'revoke' })} />
+                  )}
+                </>
               )}
             </Td>
           </tr>
@@ -128,9 +132,7 @@ function IssueCardForm({ users, defaultUser }: { users: User[]; defaultUser: str
           Issue
         </Button>
       </form>
-      <div className="mt-3">
-        <ErrorMessage error={issue.error} />
-      </div>
+      <ErrorMessage className="mt-3" error={issue.error} />
     </Panel>
   )
 }

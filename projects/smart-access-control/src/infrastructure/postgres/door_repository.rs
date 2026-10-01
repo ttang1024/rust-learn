@@ -1,7 +1,7 @@
 use sqlx::{PgExecutor, PgPool};
 use uuid::Uuid;
 
-use super::{expect_one_row, into_entities, map_error};
+use super::{expect_one_row, into_entities, into_entity, map_error};
 use crate::{
     application::{DoorRepository, PageRequest, RepositoryResult},
     domain::{ControllerId, DomainError, Door, DoorId, DoorName, Location, Timestamp},
@@ -56,7 +56,7 @@ pub(super) async fn door_by_id<'e>(
     .fetch_optional(db)
     .await
     .map_err(map_error)?;
-    Ok(row.map(Door::try_from).transpose()?)
+    into_entity(row)
 }
 
 impl DoorRepository for PgDoorRepository {

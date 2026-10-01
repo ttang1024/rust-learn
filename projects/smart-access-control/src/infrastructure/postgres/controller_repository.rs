@@ -1,6 +1,6 @@
 use sqlx::PgPool;
 
-use super::{expect_one_row, into_entities, map_error};
+use super::{expect_one_row, into_entities, into_entity, map_error};
 use crate::{
     application::{ControllerRepository, PageRequest, RepositoryResult},
     domain::{Controller, ControllerId, DomainError, Timestamp},
@@ -85,7 +85,7 @@ impl ControllerRepository for PgControllerRepository {
         .fetch_optional(&self.pool)
         .await
         .map_err(map_error)?;
-        Ok(row.map(Controller::try_from).transpose()?)
+        into_entity(row)
     }
 
     async fn find_by_key_hash(&self, key_hash: &str) -> RepositoryResult<Option<Controller>> {
@@ -96,7 +96,7 @@ impl ControllerRepository for PgControllerRepository {
         .fetch_optional(&self.pool)
         .await
         .map_err(map_error)?;
-        Ok(row.map(Controller::try_from).transpose()?)
+        into_entity(row)
     }
 
     async fn list(&self, page: PageRequest) -> RepositoryResult<Vec<Controller>> {

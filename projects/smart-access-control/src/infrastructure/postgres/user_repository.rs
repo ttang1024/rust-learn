@@ -1,7 +1,7 @@
 use sqlx::{PgExecutor, PgPool};
 use uuid::Uuid;
 
-use super::{expect_one_row, into_entities, map_error};
+use super::{expect_one_row, into_entities, into_entity, map_error};
 use crate::{
     application::{PageRequest, RepositoryResult, UserRepository},
     domain::{DomainError, Email, Timestamp, User, UserId, UserName},
@@ -59,8 +59,7 @@ pub(super) async fn user_by_id<'e>(
     .await
     .map_err(map_error)?;
 
-    // Option<Result<T, E>> -> Result<Option<T>, E>, then `?` for the error.
-    Ok(row.map(User::try_from).transpose()?)
+    into_entity(row)
 }
 
 // The trait declares `fn ... -> impl Future + Send`; implementing it with
@@ -112,7 +111,7 @@ impl UserRepository for PgUserRepository {
         .fetch_optional(&self.pool)
         .await
         .map_err(map_error)?;
-        Ok(row.map(User::try_from).transpose()?)
+        into_entity(row)
     }
 
     async fn list(&self, page: PageRequest) -> RepositoryResult<Vec<User>> {

@@ -1,7 +1,7 @@
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use super::{into_entities, map_error};
+use super::{into_entities, into_entity, map_error};
 use crate::{
     application::{
         AccessEventRepository, DecisionFilter, EventFilter, PageRequest, RepositoryResult,
@@ -103,7 +103,7 @@ impl AccessEventRepository for PgAccessEventRepository {
         .fetch_optional(&self.pool)
         .await
         .map_err(map_error)?;
-        Ok(row.map(AccessEvent::try_from).transpose()?)
+        into_entity(row)
     }
 
     /// One fixed, fully parameterized statement for every filter

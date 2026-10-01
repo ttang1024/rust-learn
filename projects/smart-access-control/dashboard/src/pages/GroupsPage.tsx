@@ -75,9 +75,7 @@ function CreateGroupForm() {
           Create
         </Button>
       </form>
-      <div className="mt-3">
-        <ErrorMessage error={create.error} />
-      </div>
+      <ErrorMessage className="mt-3" error={create.error} />
     </Panel>
   )
 }

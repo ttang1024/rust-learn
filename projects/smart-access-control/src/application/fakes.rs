@@ -9,6 +9,7 @@
 
 use std::{
     collections::HashMap,
+    hash::Hash,
     sync::{Arc, Mutex},
 };
 
@@ -48,6 +49,16 @@ impl Clock for FixedClock {
     }
 }
 
+/// The stored row with this id, like `UPDATE ... WHERE id = $1`:
+/// `NotFound` if there is none.
+fn row_mut<'a, K: Eq + Hash, V>(
+    rows: &'a mut HashMap<K, V>,
+    id: &K,
+    entity: &'static str,
+) -> RepositoryResult<&'a mut V> {
+    rows.get_mut(id).ok_or(RepositoryError::NotFound { entity })
+}
+
 /// Applies a page to already-sorted items.
 fn paginate<T>(items: Vec<T>, page: PageRequest) -> Vec<T> {
     items
@@ -79,13 +90,8 @@ impl UserRepository for InMemoryUsers {
         {
             return Err(RepositoryError::Duplicate { field: "email" });
         }
-        match rows.get_mut(&user.id()) {
-            Some(row) => {
-                *row = user.clone();
-                Ok(())
-            }
-            None => Err(RepositoryError::NotFound { entity: "user" }),
-        }
+        *row_mut(&mut rows, &user.id(), "user")? = user.clone();
+        Ok(())
     }
 
     async fn find_by_id(&self, id: UserId) -> RepositoryResult<Option<User>> {
@@ -120,13 +126,8 @@ impl CardRepository for InMemoryCards {
     }
 
     async fn update(&self, card: &AccessCard) -> RepositoryResult<()> {
-        match self.0.lock().unwrap().get_mut(&card.id()) {
-            Some(row) => {
-                *row = card.clone();
-                Ok(())
-            }
-            None => Err(RepositoryError::NotFound { entity: "card" }),
-        }
+        *row_mut(&mut self.0.lock().unwrap(), &card.id(), "card")? = card.clone();
+        Ok(())
     }
 
     async fn find_by_id(&self, id: CardId) -> RepositoryResult<Option<AccessCard>> {
@@ -168,13 +169,8 @@ impl DoorRepository for InMemoryDoors {
     }
 
     async fn update(&self, door: &Door) -> RepositoryResult<()> {
-        match self.0.lock().unwrap().get_mut(&door.id()) {
-            Some(row) => {
-                *row = door.clone();
-                Ok(())
-            }
-            None => Err(RepositoryError::NotFound { entity: "door" }),
-        }
+        *row_mut(&mut self.0.lock().unwrap(), &door.id(), "door")? = door.clone();
+        Ok(())
     }
 
     async fn find_by_id(&self, id: DoorId) -> RepositoryResult<Option<Door>> {
@@ -217,15 +213,12 @@ impl AccessGroupRepository for InMemoryGroups {
     }
 
     async fn update(&self, group: &AccessGroup) -> RepositoryResult<()> {
-        match self.groups.lock().unwrap().get_mut(&group.id()) {
-            Some(row) => {
-                *row = group.clone();
-                Ok(())
-            }
-            None => Err(RepositoryError::NotFound {
-                entity: "access_group",
-            }),
-        }
+        *row_mut(
+            &mut self.groups.lock().unwrap(),
+            &group.id(),
+            "access_group",
+        )? = group.clone();
+        Ok(())
     }
 
     async fn delete(&self, id: AccessGroupId) -> RepositoryResult<()> {
@@ -479,11 +472,11 @@ impl AdministratorRepository for InMemoryAdmins {
     }
 }
 
-/// Same semantics as the PostgreSQL implementation, including which
-/// revocation reason turns into which outcome.
 /// A stored token and, once it is no longer usable, why.
 type TokenRow = (RefreshTokenRecord, Option<RevocationReason>);
 
+/// Same semantics as the PostgreSQL implementation, including which
+/// revocation reason turns into which outcome.
 #[derive(Default, Clone)]
 pub struct InMemoryRefreshTokens(Arc<Mutex<HashMap<String, TokenRow>>>);
 
@@ -655,27 +648,13 @@ impl ControllerRepository for InMemoryControllers {
     }
 
     async fn update(&self, controller: &Controller) -> RepositoryResult<()> {
-        match self.0.lock().unwrap().get_mut(controller.id()) {
-            Some((row, _)) => {
-                *row = controller.clone();
-                Ok(())
-            }
-            None => Err(RepositoryError::NotFound {
-                entity: "controller",
-            }),
-        }
+        row_mut(&mut self.0.lock().unwrap(), controller.id(), "controller")?.0 = controller.clone();
+        Ok(())
     }
 
     async fn set_key_hash(&self, id: &ControllerId, key_hash: &str) -> RepositoryResult<()> {
-        match self.0.lock().unwrap().get_mut(id) {
-            Some((_, hash)) => {
-                *hash = key_hash.to_owned();
-                Ok(())
-            }
-            None => Err(RepositoryError::NotFound {
-                entity: "controller",
-            }),
-        }
+        row_mut(&mut self.0.lock().unwrap(), id, "controller")?.1 = key_hash.to_owned();
+        Ok(())
     }
 
     async fn find_by_id(&self, id: &ControllerId) -> RepositoryResult<Option<Controller>> {

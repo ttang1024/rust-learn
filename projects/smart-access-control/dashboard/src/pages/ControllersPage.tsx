@@ -111,9 +111,7 @@ function RegisterForm({ onIssued }: { onIssued: (issued: IssuedKey) => void }) {
           Register
         </Button>
       </form>
-      <div className="mt-3">
-        <ErrorMessage error={register.error} />
-      </div>
+      <ErrorMessage className="mt-3" error={register.error} />
     </Panel>
   )
 }

@@ -88,9 +88,7 @@ function AddMemberForm({ groupId, candidates }: { groupId: string; candidates: U
           Add
         </Button>
       </form>
-      <div className="mt-3">
-        <ErrorMessage error={add.error} />
-      </div>
+      <ErrorMessage className="mt-3" error={add.error} />
     </Panel>
   )
 }

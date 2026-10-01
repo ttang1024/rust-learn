@@ -16,7 +16,7 @@
 use std::{
     collections::HashMap,
     future::Future,
-    sync::{Arc, Mutex},
+    sync::{Arc, Mutex, MutexGuard, PoisonError},
     time::Duration,
 };
 
@@ -120,10 +120,7 @@ impl Simulator {
         heartbeat_every: Duration,
         now: impl Fn() -> Timestamp + Send + 'static,
     ) -> Result<(), SimulatorError> {
-        let mut running = self
-            .running
-            .lock()
-            .unwrap_or_else(|poison| poison.into_inner());
+        let mut running = self.lock();
         if running.contains_key(id) {
             return Err(SimulatorError::AlreadyRunning(id.to_owned()));
         }
@@ -182,43 +179,26 @@ impl Simulator {
         card_number: String,
         door_id: DoorId,
     ) -> Result<AccessEvent, SimulatorError> {
-        let (reply, response) = oneshot::channel();
-        self.send(
-            id,
-            Command::Swipe {
-                card_number,
-                door_id,
-                reply,
-            },
-        )
-        .await?;
-        response
-            .await
-            .map_err(|_| SimulatorError::NotRunning(id.to_owned()))?
+        self.request(id, |reply| Command::Swipe {
+            card_number,
+            door_id,
+            reply,
+        })
+        .await?
     }
 
     pub async fn outage(&self, id: &str) -> Result<(), SimulatorError> {
-        let (reply, response) = oneshot::channel();
-        self.send(id, Command::Outage { reply }).await?;
-        response
-            .await
-            .map_err(|_| SimulatorError::NotRunning(id.to_owned()))
+        self.request(id, |reply| Command::Outage { reply }).await
     }
 
     pub async fn disconnect(&self, id: &str) -> Result<(), SimulatorError> {
-        let (reply, response) = oneshot::channel();
-        self.send(id, Command::Disconnect { reply }).await?;
-        response
-            .await
-            .map_err(|_| SimulatorError::NotRunning(id.to_owned()))?
+        self.request(id, |reply| Command::Disconnect { reply })
+            .await?
     }
 
     pub async fn reconnect(&self, id: &str) -> Result<(), SimulatorError> {
-        let (reply, response) = oneshot::channel();
-        self.send(id, Command::Reconnect { reply }).await?;
-        response
-            .await
-            .map_err(|_| SimulatorError::NotRunning(id.to_owned()))?
+        self.request(id, |reply| Command::Reconnect { reply })
+            .await?
     }
 
     /// Stops a controller: it disconnects cleanly, then its task ends.
@@ -241,6 +221,19 @@ impl Simulator {
         }
     }
 
+    /// Sends a command built around a reply channel and waits for the reply.
+    async fn request<T>(
+        &self,
+        id: &str,
+        command: impl FnOnce(oneshot::Sender<T>) -> Command,
+    ) -> Result<T, SimulatorError> {
+        let (reply, response) = oneshot::channel();
+        self.send(id, command(reply)).await?;
+        response
+            .await
+            .map_err(|_| SimulatorError::NotRunning(id.to_owned()))
+    }
+
     async fn send(&self, id: &str, command: Command) -> Result<(), SimulatorError> {
         // Clone the sender so the registry lock is not held while waiting
         // for room in the channel.
@@ -255,12 +248,8 @@ impl Simulator {
             .map_err(|_| SimulatorError::NotRunning(id.to_owned()))
     }
 
-    fn lock(&self) -> std::sync::MutexGuard<'_, HashMap<String, Handle>> {
-        // A panic while holding this lock cannot leave the map half-updated
-        // (every operation is a single insert/remove), so recover from poisoning.
-        self.running
-            .lock()
-            .unwrap_or_else(|poison| poison.into_inner())
+    fn lock(&self) -> MutexGuard<'_, HashMap<String, Handle>> {
+        lock(&self.running)
     }
 }
 
@@ -274,15 +263,18 @@ async fn shut_down(handle: Handle) {
     }
 }
 
+/// Every guarded update here is a single insert, remove or field write: a
+/// panic cannot leave the data half-updated, so recovering from poisoning is safe.
+fn lock<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {
+    mutex.lock().unwrap_or_else(PoisonError::into_inner)
+}
+
 fn read(status: &Mutex<SimulatedStatus>) -> SimulatedStatus {
-    status
-        .lock()
-        .unwrap_or_else(|poison| poison.into_inner())
-        .clone()
+    lock(status).clone()
 }
 
 fn update(status: &Mutex<SimulatedStatus>, change: impl FnOnce(&mut SimulatedStatus)) {
-    change(&mut status.lock().unwrap_or_else(|poison| poison.into_inner()));
+    change(&mut lock(status));
 }
 
 /// Sends one heartbeat and records the outcome in `status`.
